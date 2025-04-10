@@ -5,8 +5,6 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-
   Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,

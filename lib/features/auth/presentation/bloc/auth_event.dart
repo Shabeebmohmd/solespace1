@@ -45,3 +45,5 @@ class ResetPassword extends AuthEvent {
 }
 
 class SignOut extends AuthEvent {}
+
+class CheckAuthStatus extends AuthEvent {}

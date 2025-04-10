@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
 import 'package:sole_space_user1/features/auth/presentation/bloc/auth_event.dart';
@@ -12,6 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInWithGoogle>(_onSignInWithGoogle);
     on<ResetPassword>(_onResetPassword);
     on<SignOut>(_onSignOut);
+    on<CheckAuthStatus>(_onCheckAuthStatus);
   }
 
   Future<void> _onSignInWithEmailAndPassword(
@@ -79,6 +81,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(Unauthenticated());
     } catch (e) {
       emit(AuthError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onCheckAuthStatus(
+    CheckAuthStatus event,
+    Emitter<AuthState> emit,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      emit(Authenticated(uid: user.uid));
+    } else {
+      emit(Unauthenticated());
     }
   }
 }

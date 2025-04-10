@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            Navigator.popAndPushNamed(context, AppRouter.home);
+            Navigator.pushReplacementNamed(context, AppRouter.home);
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -206,7 +206,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRouter.register);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRouter.register,
+                        );
                       },
                       child: const Text('Sign Up'),
                     ),
