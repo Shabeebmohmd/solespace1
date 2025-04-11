@@ -25,16 +25,11 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      return await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // Set onboarding status to false for new users
-      await _setOnboardingStatus(userCredential.user!.uid, false);
-      print('New user registered with uid: ${userCredential.user!.uid}');
-      return userCredential;
     } catch (e) {
-      print('Error in registerWithEmailAndPassword: $e');
       throw _handleAuthException(e);
     }
   }
@@ -51,16 +46,8 @@ class AuthRepository {
         idToken: googleAuth.idToken,
       );
 
-      final userCredential = await _auth.signInWithCredential(credential);
-
-      // Check if this is a new user
-      if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-        print('New Google user with uid: ${userCredential.user!.uid}');
-        await _setOnboardingStatus(userCredential.user!.uid, false);
-      }
-      return userCredential;
+      return await _auth.signInWithCredential(credential);
     } catch (e) {
-      print('Error in signInWithGoogle: $e');
       throw _handleAuthException(e);
     }
   }
@@ -78,34 +65,6 @@ class AuthRepository {
       await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
     } catch (e) {
       throw _handleAuthException(e);
-    }
-  }
-
-  Future<void> _setOnboardingStatus(String uid, bool status) async {
-    try {
-      print('Setting onboarding status for user $uid to $status');
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
-
-      // First check if the document exists
-      final docSnapshot = await userDoc.get();
-      if (!docSnapshot.exists) {
-        print('Creating new user document');
-        await userDoc.set({
-          'hasCompletedOnboarding': status,
-          'createdAt': FieldValue.serverTimestamp(),
-          'lastUpdated': FieldValue.serverTimestamp(),
-        });
-      } else {
-        print('Updating existing user document');
-        await userDoc.update({
-          'hasCompletedOnboarding': status,
-          'lastUpdated': FieldValue.serverTimestamp(),
-        });
-      }
-      print('Onboarding status set successfully');
-    } catch (e) {
-      print('Error setting onboarding status: $e');
-      rethrow;
     }
   }
 

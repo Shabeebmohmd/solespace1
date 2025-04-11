@@ -18,9 +18,6 @@ class SplashPage extends StatelessWidget {
         if (state is Authenticated) {
           print('Navigating to home');
           Navigator.pushReplacementNamed(context, AppRouter.home);
-        } else if (state is OnboardingRequired) {
-          print('Navigating to onboarding');
-          Navigator.pushReplacementNamed(context, AppRouter.onboard1);
         } else if (state is Unauthenticated) {
           print('Navigating to login');
           Navigator.pushReplacementNamed(context, AppRouter.login);
