@@ -20,6 +20,15 @@ class Authenticated extends AuthState {
   List<Object?> get props => [uid];
 }
 
+class OnboardingRequired extends AuthState {
+  final String uid;
+
+  const OnboardingRequired({required this.uid});
+
+  @override
+  List<Object?> get props => [uid];
+}
+
 class Unauthenticated extends AuthState {}
 
 class AuthError extends AuthState {

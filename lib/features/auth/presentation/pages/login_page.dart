@@ -50,6 +50,8 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state is Authenticated) {
             Navigator.pushReplacementNamed(context, AppRouter.home);
+          } else if (state is OnboardingRequired) {
+            Navigator.pushReplacementNamed(context, AppRouter.onboard1);
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sole_space_user1/config/routes/app_router.dart';
 
-class Onboard1 extends StatelessWidget {
-  const Onboard1({super.key});
+class Onboard3 extends StatelessWidget {
+  const Onboard3({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class Onboard1 extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     // Navigate to the next page or perform an action
-                    Navigator.pushNamed(context, '/onboard2');
+                    Navigator.pushNamed(context, AppRouter.home);
                   },
                   child: const Text('Get Started'),
                 ),

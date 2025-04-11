@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
@@ -14,6 +15,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResetPassword>(_onResetPassword);
     on<SignOut>(_onSignOut);
     on<CheckAuthStatus>(_onCheckAuthStatus);
+
+    // Check initial auth state
+    add(CheckAuthStatus());
   }
 
   Future<void> _onSignInWithEmailAndPassword(
@@ -88,11 +92,42 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     CheckAuthStatus event,
     Emitter<AuthState> emit,
   ) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      emit(Authenticated(uid: user.uid));
-    } else {
-      emit(Unauthenticated());
+    try {
+      print('Checking auth status...');
+      final user = FirebaseAuth.instance.currentUser;
+      print('Current user: ${user?.uid}');
+
+      if (user != null) {
+        try {
+          final doc =
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user.uid)
+                  .get();
+          print('User document exists: ${doc.exists}');
+          print('User data: ${doc.data()}');
+
+          final hasCompletedOnboarding =
+              doc.data()?['hasCompletedOnboarding'] ?? false;
+          print('Has completed onboarding: $hasCompletedOnboarding');
+
+          if (hasCompletedOnboarding) {
+            emit(Authenticated(uid: user.uid));
+          } else {
+            emit(OnboardingRequired(uid: user.uid));
+          }
+        } catch (e) {
+          print('Error checking user document: $e');
+          // If there's an error checking the document, assume onboarding is required
+          emit(OnboardingRequired(uid: user.uid));
+        }
+      } else {
+        print('No user found, emitting Unauthenticated');
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      print('Error in _onCheckAuthStatus: $e');
+      emit(AuthError(message: e.toString()));
     }
   }
 }
