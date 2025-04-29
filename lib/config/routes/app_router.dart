@@ -4,9 +4,6 @@ import 'package:sole_space_user1/features/auth/presentation/pages/register_page.
 import 'package:sole_space_user1/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_page.dart';
-import 'package:sole_space_user1/features/onboard/presentation/pages/onboard1.dart';
-import 'package:sole_space_user1/features/onboard/presentation/pages/onboard2.dart';
-import 'package:sole_space_user1/features/onboard/presentation/pages/onboard3.dart';
 
 class AppRouter {
   //auth routes
@@ -27,17 +24,11 @@ class AppRouter {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
       case login:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return MaterialPageRoute(builder: (_) => LoginPage());
       case register:
-        return MaterialPageRoute(builder: (_) => const RegisterPage());
+        return MaterialPageRoute(builder: (_) => RegisterPage());
       case resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordPage());
-      case onboard1:
-        return MaterialPageRoute(builder: (_) => const Onboard1());
-      case onboard2:
-        return MaterialPageRoute(builder: (_) => const Onboard2());
-      case onboard3:
-        return MaterialPageRoute(builder: (_) => const Onboard3());
       case home:
         return MaterialPageRoute(builder: (_) => const HomePage());
       default:

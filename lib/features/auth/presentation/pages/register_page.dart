@@ -1,48 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/password/password_bloc.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class RegisterPage extends StatelessWidget {
+  RegisterPage({super.key});
 
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _handleRegister() {
-    if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        RegisterWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
-      );
-    }
-  }
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    // Handle the registration process
+    void handleRegister() async {
+      if (_formKey.currentState?.validate() ?? false) {
+        context.read<AuthBloc>().add(
+          RegisterWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            name: _nameController.text.trim(),
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -58,136 +50,170 @@ class _RegisterPageState extends State<RegisterPage> {
           }
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 48),
-                  Text(
-                    'Join Sole Space',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Create an account to get started',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 48),
-                  CustomTextField(
-                    label: 'Email',
-                    hint: 'Enter your email',
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Password',
-                    hint: 'Enter your password',
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    // padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          largeSpacing,
+                          _buildMainText(context),
+                          smallSpacing,
+                          _buildSecondaryText(context),
+                          largeSpacing,
+                          _buildNameField(),
+                          mediumSpacing,
+                          _buildEmailField(),
+                          mediumSpacing,
+                          BlocBuilder<PasswordBloc, PasswordState>(
+                            builder: (context, state) {
+                              return _buildPasswordField(state, context);
+                            },
+                          ),
+                          mediumSpacing,
+                          BlocBuilder<PasswordBloc, PasswordState>(
+                            builder: (context, state) {
+                              return _buildConfirmPassField(state, context);
+                            },
+                          ),
+                          extraMediumSpacing,
+                          BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              return _buildCreateButton(handleRegister, state);
+                            },
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  CustomTextField(
-                    label: 'Confirm Password',
-                    hint: 'Confirm your password',
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account?',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      return CustomButton(
-                        text: 'Create Account',
-                        onPressed: _handleRegister,
-                        isLoading: state is AuthLoading,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account?',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRouter.login,
-                          );
-                        },
-                        child: const Text('Sign In'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    _buildSingInButton(context),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  CustomTextField _buildNameField() {
+    return CustomTextField(
+      label: 'Name',
+      hint: 'Enter your name',
+      controller: _nameController,
+      keyboardType: TextInputType.name,
+    );
+  }
+
+  TextButton _buildSingInButton(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.pushReplacementNamed(context, AppRouter.login);
+      },
+      child: const Text('Sign In'),
+    );
+  }
+
+  CustomButton _buildCreateButton(
+    void Function() handleRegister,
+    AuthState state,
+  ) {
+    return CustomButton(
+      text: 'Create Account',
+      onPressed: handleRegister,
+      isLoading: state is AuthLoading,
+    );
+  }
+
+  CustomTextField _buildConfirmPassField(
+    PasswordState state,
+    BuildContext context,
+  ) {
+    return CustomTextField(
+      label: 'Confirm Password',
+      hint: 'Confirm your password',
+      controller: _confirmPasswordController,
+      obscureText: state.isPasswordVisible,
+      validator:
+          (p0) => validateConfirmPassword(p0, _confirmPasswordController.text),
+      suffixIcon: IconButton(
+        icon: Icon(
+          state.isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+        ),
+        onPressed: () {
+          context.read<PasswordBloc>().add(
+            PasswordShow(isVisible: !state.isPasswordVisible),
+          );
+        },
+      ),
+    );
+  }
+
+  CustomTextField _buildPasswordField(
+    PasswordState state,
+    BuildContext context,
+  ) {
+    return CustomTextField(
+      label: 'Password',
+      hint: 'Enter your password',
+      controller: _passwordController,
+      obscureText: state.isPasswordVisible,
+      validator: (p0) => validatePassword(p0),
+      suffixIcon: IconButton(
+        icon: Icon(
+          state.isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+        ),
+        onPressed: () {
+          context.read<PasswordBloc>().add(
+            PasswordShow(isVisible: !state.isPasswordVisible),
+          );
+        },
+      ),
+    );
+  }
+
+  CustomTextField _buildEmailField() {
+    return CustomTextField(
+      label: 'Email',
+      hint: 'Enter your email',
+      controller: _emailController,
+      keyboardType: TextInputType.emailAddress,
+      validator: (p0) => validateEmail(p0),
+    );
+  }
+
+  Text _buildSecondaryText(BuildContext context) {
+    return Text(
+      'Create an account to get started',
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Text _buildMainText(BuildContext context) {
+    return Text(
+      'Join Sole Space',
+      style: Theme.of(
+        context,
+      ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
     );
   }
 }

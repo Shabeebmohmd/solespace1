@@ -46,7 +46,9 @@ dependencies:
   flutter_svg:
   cached_network_image:
   shimmer:
-
+  curved_navigation_bar:
+  badges:
+  flutter_slidable:
   # Authentication
   google_sign_in:
 

@@ -65,7 +65,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   'Reset Password',
@@ -91,17 +90,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!value.contains('@')) {
+                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                    if (!emailRegex.hasMatch(value)) {
                       return 'Please enter a valid email';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 40),
-                // BasicAppButton(
-                //   onPressed: _isLoading ? () {} : _resetPassword,
-                //   title: _isLoading ? 'Sending...' : 'Reset Password',
-                // ),
                 CustomButton(
                   text: _isLoading ? 'Sending...' : 'Reset Pasword',
                   onPressed: _isLoading ? () {} : _resetPassword,

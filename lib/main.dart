@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_theme.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/password/password_bloc.dart';
+import 'package:sole_space_user1/features/home/data/brand_repository.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
-      providers: [RepositoryProvider(create: (context) => AuthRepository())],
+      providers: [
+        RepositoryProvider(create: (context) => AuthRepository()),
+        RepositoryProvider(create: (context) => BrandRepository()),
+      ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -26,13 +32,19 @@ class MyApp extends StatelessWidget {
                 (context) =>
                     AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
+          BlocProvider(create: (context) => PasswordBloc()),
+          BlocProvider(
+            create:
+                (context) =>
+                    BrandBloc(homeRepository: context.read<BrandRepository>()),
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Sole Space',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
+          themeMode: ThemeMode.dark,
           onGenerateRoute: AppRouter.onGenerateRoute,
           initialRoute: AppRouter.splash,
         ),

@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_event.dart';
-import 'package:sole_space_user1/features/auth/presentation/bloc/auth_state.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -16,7 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatus>(_onCheckAuthStatus);
 
     // Check initial auth state
-    add(CheckAuthStatus());
+    // add(CheckAuthStatus());
   }
 
   Future<void> _onSignInWithEmailAndPassword(
@@ -45,6 +46,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
+      final user = UserModel(
+        id: userCredential.user!.uid,
+        email: event.email,
+        name: event.name,
+      );
+      await authRepository.addUserToFirestore(user);
       emit(Authenticated(uid: userCredential.user!.uid));
     } catch (e) {
       emit(AuthError(message: e.toString()));

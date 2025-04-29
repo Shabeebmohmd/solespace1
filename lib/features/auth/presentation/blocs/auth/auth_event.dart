@@ -23,14 +23,16 @@ class SignInWithEmailAndPassword extends AuthEvent {
 class RegisterWithEmailAndPassword extends AuthEvent {
   final String email;
   final String password;
+  final String name;
 
   const RegisterWithEmailAndPassword({
     required this.email,
     required this.password,
+    required this.name,
   });
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [email, password, name];
 }
 
 class SignInWithGoogle extends AuthEvent {}
