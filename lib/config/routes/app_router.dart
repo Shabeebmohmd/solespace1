@@ -30,7 +30,7 @@ class AppRouter {
       case resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordPage());
       case home:
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return MaterialPageRoute(builder: (_) => HomePage());
       default:
         return MaterialPageRoute(
           builder:

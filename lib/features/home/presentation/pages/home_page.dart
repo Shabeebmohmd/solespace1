@@ -2,20 +2,21 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/config/theme/app_color.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
+import 'package:sole_space_user1/features/home/data/brand_repository.dart';
+import 'package:sole_space_user1/features/home/models/brand_model.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 2; // Start with center item selected
-
+  // final BrandRepository _brandRepository = BrandRepository();
+  // int _selectedIndex = 2;
+  // Start with center item selected
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,73 +30,35 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(context),
               _buildSearchBar(),
-              _buildBrandsList(),
-              _buildPopularShoes(),
+              _buildCategoryList(),
+              _buildBrandCards(),
               _buildNewArrivals(),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: _buildBottomNavBar(context),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Store location',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.location_on, color: Colors.red, size: 16),
-                    Text(
-                      'Mondolibug, Sylhet',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
           Badge(
             child: IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                showDialog(
+                showCustomAlertDialog(
                   context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Log out'),
-                      content: const Text('Are you sure you want to log out.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.read<AuthBloc>().add(SignOut());
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
+                  title: 'Log out',
+                  content: 'Are you sure you want to log out?',
+                  onConfirm: () => context.read<AuthBloc>().add(SignOut()),
                 );
               },
             ),
@@ -124,96 +87,127 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildBrandsList() {
-    final brands = [
-      {'name': 'Nike', 'logo': 'assets/images/nike.png', 'isSelected': true},
-      {'name': 'Puma', 'logo': 'assets/images/puma.png', 'isSelected': false},
-      {'name': 'UA', 'logo': 'assets/images/ua.png', 'isSelected': false},
-      {
-        'name': 'Adidas',
-        'logo': 'assets/images/adidas.png',
-        'isSelected': false,
-      },
-      {
-        'name': 'Converse',
-        'logo': 'assets/images/converse.png',
-        'isSelected': false,
-      },
-    ];
-
-    return Container(
-      height: 60,
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: brands.length,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemBuilder: (context, index) {
-          final brand = brands[index];
+  Widget _buildCategoryList() {
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (context, state) {
+        if (state is CategoryLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is CategoryLoaded) {
           return Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              color:
-                  brand['isSelected'] == true
-                      ? Colors.blue[100]
-                      : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(
-              child: Text(
-                brand['name'] as String,
-                style: TextStyle(
-                  color:
-                      brand['isSelected'] == true ? Colors.blue : Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            height: 60,
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: state.data.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder: (context, index) {
+                final category = state.data[index];
+                return Container(
+                  margin: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.smallTexts,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      category.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              },
             ),
           );
-        },
-      ),
+        } else if (state is CategoryError) {
+          return Center(child: Text(state.message));
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
+  // Widget _buildBrandsList() {
+  //   return BlocBuilder<BrandBloc, BrandState>(
+  //     builder: (context, state) {
+  //       if (state is BrandLoading) {
+  //         return const Center(child: CircularProgressIndicator());
+  //       } else if (state is BrandLoaded) {
+  //         return Container(
+  //           height: 60,
+  //           margin: const EdgeInsets.symmetric(vertical: 16),
+  //           child: ListView.builder(
+  //             scrollDirection: Axis.horizontal,
+  //             itemCount: state.data.length,
+  //             padding: const EdgeInsets.symmetric(horizontal: 16),
+  //             itemBuilder: (context, index) {
+  //               final brand = state.data[index];
+  //               return Container(
+  //                 margin: const EdgeInsets.only(right: 12),
+  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
+  //                 decoration: BoxDecoration(
+  //                   color: AppColors.smallTexts,
+  //                   borderRadius: BorderRadius.circular(20),
+  //                 ),
+  //                 child: Center(
+  //                   child: Text(
+  //                     brand.name,
+  //                     style: const TextStyle(fontWeight: FontWeight.bold),
+  //                   ),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         );
+  //       } else if (state is BrandError) {
+  //         return Center(child: Text(state.message));
+  //       }
+  //       return const SizedBox.shrink();
+  //     },
+  //   );
+  // }
 
-  Widget _buildPopularShoes() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildBrandCards() {
+    return BlocBuilder<BrandBloc, BrandState>(
+      builder: (context, state) {
+        if (state is BrandLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is BrandLoaded) {
+          return Column(
             children: [
-              const Text(
-                'Popular Shoes',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Popular Brands',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextButton(onPressed: () {}, child: const Text('See all')),
+                  ],
+                ),
               ),
-              TextButton(onPressed: () {}, child: const Text('See all')),
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.data.length,
+                  itemBuilder: (context, index) {
+                    final brands = state.data[index];
+                    return _buildShoeCard(brands);
+                  },
+                ),
+              ),
             ],
-          ),
-        ),
-        SizedBox(
-          height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildShoeCard(
-                'Nike Jordan',
-                '\$493.00',
-                'assets/images/jordan.png',
-                'BEST SELLER',
-              ),
-              _buildShoeCard(
-                'Nike Air Max',
-                '\$897.99',
-                'assets/images/airmax.png',
-                'BEST SELLER',
-              ),
-            ],
-          ),
-        ),
-      ],
+          );
+        } else if (state is BrandError) {
+          return Center(child: Text(state.message));
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -247,9 +241,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildShoeCard(String name, String price, String image, String tag) {
+  Widget _buildShoeCard(Brand brands) {
     return Container(
-      width: 160,
       margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -257,39 +250,35 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(tag, style: TextStyle(color: Colors.blue[300], fontSize: 12)),
+          // Text(tag, style: TextStyle(color: Colors.blue[300], fontSize: 12)),
           Expanded(
-            child: Center(child: Image.asset(image, fit: BoxFit.contain)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Center(
+                child: Image.network(brands.imageUrl, fit: BoxFit.contain),
+              ),
+            ),
           ),
+          smallSpacing,
           Text(
-            name,
+            brands.name,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                price,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
-              ),
-            ],
-          ),
+          // Flexible(
+          //   child: Container(
+          //     height: 100,
+          //     width: 100,
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       image: DecorationImage(image: NetworkImage(brands.imageUrl)),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -343,7 +332,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildBottomNavBar() {
+  Widget _buildBottomNavBar(context) {
     return CurvedNavigationBar(
       backgroundColor: Colors.transparent,
       color: Theme.of(context).colorScheme.surface,
@@ -353,54 +342,54 @@ class _HomePageState extends State<HomePage> {
       items: [
         Icon(
           Icons.shopping_bag_outlined,
-          color: _selectedIndex == 0 ? Colors.white : Colors.grey,
+          // color: _selectedIndex == 0 ? Colors.white : Colors.grey,
         ),
         Icon(
           Icons.favorite_border,
-          color: _selectedIndex == 1 ? Colors.white : Colors.grey,
+          // color: _selectedIndex == 1 ? Colors.white : Colors.grey,
         ),
         Icon(
           Icons.home_outlined,
-          color: _selectedIndex == 2 ? Colors.white : Colors.grey,
+          // color: _selectedIndex == 2 ? Colors.white : Colors.grey,
         ),
         Icon(
           Icons.notifications_none_outlined,
-          color: _selectedIndex == 3 ? Colors.white : Colors.grey,
+          // color: _selectedIndex == 3 ? Colors.white : Colors.grey,
         ),
         Icon(
           Icons.person_outline,
-          color: _selectedIndex == 4 ? Colors.white : Colors.grey,
+          // color: _selectedIndex == 4 ? Colors.white : Colors.grey,
         ),
       ],
-      index: _selectedIndex,
-      onTap: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-        // Handle navigation here
-        switch (index) {
-          case 0:
-            print('Home tapped');
-            break;
-          case 1:
-            print('Favorites tapped');
-            break;
-          case 2:
-            print('Cart tapped');
-            break;
-          case 3:
-            print('Notifications tapped');
-            break;
-          case 4:
-            print('Profile tapped');
-            break;
-        }
-      },
+      // index: _selectedIndex,
+      // onTap: (index) {
+      //   setState(() {
+      //     _selectedIndex = index;
+      //   });
+      //   // Handle navigation here
+      //   switch (index) {
+      //     case 0:
+      //       print('Home tapped');
+      //       break;
+      //     case 1:
+      //       print('Favorites tapped');
+      //       break;
+      //     case 2:
+      //       print('Cart tapped');
+      //       break;
+      //     case 3:
+      //       print('Notifications tapped');
+      //       break;
+      //     case 4:
+      //       print('Profile tapped');
+      //       break;
+      //   }
+      // },
     );
   }
 }
 
-              // BlocProvider(
+// BlocProvider(
               //   create:
               //       (context) =>
               //           BrandBloc(homeRepository: BrandRepository())

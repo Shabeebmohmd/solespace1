@@ -1,6 +1,6 @@
 //validations
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 String? validateEmail(String? value) {
   if (value == null || value.isEmpty) {
@@ -31,6 +31,40 @@ String? validateConfirmPassword(String? value, String text) {
     return 'Passwords do not match';
   }
   return null;
+}
+
+Future<void> showCustomAlertDialog({
+  required BuildContext context,
+  required String title,
+  required String content,
+  required VoidCallback onConfirm,
+  String confirmText = 'OK',
+  String cancelText = 'Cancel',
+}) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text(cancelText),
+          ),
+          TextButton(
+            onPressed: () {
+              onConfirm();
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text(confirmText),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 // Global SizedBox widgets

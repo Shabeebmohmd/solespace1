@@ -1,21 +1,21 @@
-class Brand {
+class Category {
   final String id;
   final String name;
   final String? description;
   final String imageUrl;
 
-  Brand({
+  Category({
     required this.id,
     required this.name,
     this.description,
     required this.imageUrl,
   });
 
-  factory Brand.fromFirestore(Map<String, dynamic> data, String id) {
-    return Brand(
+  factory Category.fromFirestore(Map<String, dynamic> data, String id) {
+    return Category(
       id: id,
       name: data['name'] ?? '',
-      imageUrl: data['logoImage'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
       description: data['description'] ?? '',
     );
   }

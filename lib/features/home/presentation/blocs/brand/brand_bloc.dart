@@ -7,8 +7,8 @@ part 'brand_event.dart';
 part 'brand_state.dart';
 
 class BrandBloc extends Bloc<BrandEvent, BrandState> {
-  final BrandRepository homeRepository;
-  BrandBloc({required this.homeRepository}) : super(BrandInitial()) {
+  final BrandRepository brandRepository;
+  BrandBloc({required this.brandRepository}) : super(BrandInitial()) {
     on<FetchBrands>(_onFetchBrand);
   }
 
@@ -18,7 +18,7 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
   ) async {
     emit(BrandLoading());
     try {
-      final brands = await homeRepository.fetchBrands();
+      final brands = await brandRepository.fetchBrands();
       emit(BrandLoaded(data: brands));
     } catch (e) {
       emit(BrandError(message: e.toString()));

@@ -7,7 +7,9 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/password/password_bloc.dart';
 import 'package:sole_space_user1/features/home/data/brand_repository.dart';
+import 'package:sole_space_user1/features/home/data/category_repsitory.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         RepositoryProvider(create: (context) => AuthRepository()),
         RepositoryProvider(create: (context) => BrandRepository()),
+        RepositoryProvider(create: (context) => CategoryRepsitory()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -36,7 +39,14 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create:
                 (context) =>
-                    BrandBloc(homeRepository: context.read<BrandRepository>()),
+                    BrandBloc(brandRepository: context.read<BrandRepository>())
+                      ..add(FetchBrands()),
+          ),
+          BlocProvider(
+            create:
+                (context) => CategoryBloc(
+                  categoryRepsitory: context.read<CategoryRepsitory>(),
+                )..add(FetchCategory()),
           ),
         ],
         child: MaterialApp(

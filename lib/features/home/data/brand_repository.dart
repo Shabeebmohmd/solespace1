@@ -30,16 +30,6 @@ import 'package:sole_space_user1/features/home/models/brand_model.dart';
 
 class BrandRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<List<Map<String, dynamic>>> fetchCategories() async {
-    try {
-      final querySnapshot = await _firestore.collection('categories').get();
-      return querySnapshot.docs.map((doc) => doc.data()).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch categories: $e');
-    }
-  }
-
   Future<List<Brand>> fetchBrands() async {
     try {
       final querySnapshot = await _firestore.collection('brands').get();

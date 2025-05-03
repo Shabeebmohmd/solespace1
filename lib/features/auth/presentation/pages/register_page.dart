@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
-import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
