@@ -6,3 +6,10 @@ sealed class BottomNavigationEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class TabSelected extends BottomNavigationEvent {
+  final int index;
+  const TabSelected({required this.index});
+  @override
+  List<Object> get props => [index];
+}

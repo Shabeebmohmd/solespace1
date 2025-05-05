@@ -5,11 +5,11 @@ class Product {
   String brandId; // Reference to brand (stored as brand document ID)
   String categoryId; // Reference to category (stored as category document ID)
   double? price; // Price of the shoe
-  // double? discountPrice; // Optional discounted price
+  double? discountPrice; // Optional discounted price
   int stockQuantity; // Available stock
   List<String> imageUrls; // List of image URLs from Cloudinary
-  List<String>? sizes; // Available sizes (e.g., ["7", "8", "9"])
-  List<String>? colors;
+  List<String> sizes; // Available sizes (e.g., ["7", "8", "9"])
+  List<String> colors;
 
   Product({
     this.id,
@@ -18,11 +18,11 @@ class Product {
     required this.brandId,
     required this.categoryId,
     required this.price,
-    // this.discountPrice,
+    this.discountPrice,
     required this.stockQuantity,
     required this.imageUrls,
-    this.sizes,
-    this.colors,
+    required this.sizes,
+    required this.colors,
   });
 
   factory Product.fromFirestore(Map<String, dynamic> json, String id) =>
@@ -36,11 +36,13 @@ class Product {
             (json['price'] is String)
                 ? double.tryParse(json['price'])
                 : json['price']?.toDouble(),
-        // discountPrice: json['discountPrice'] ?? '',
+        discountPrice:
+            (json['discountPrice'] is String)
+                ? double.tryParse(json['discountPrice'])
+                : json['discountPrice'].toDouble(),
         stockQuantity: json['stockQuantity'] ?? '',
         imageUrls: List<String>.from(json['imageUrls']),
-        sizes: json['sizes'] != null ? List<String>.from(json['sizes']) : null,
-        colors:
-            json['colors'] != null ? List<String>.from(json['colors']) : null,
+        sizes: List<String>.from(json['sizes']),
+        colors: List<String>.from(json['colors']),
       );
 }

@@ -9,6 +9,7 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/password/passw
 import 'package:sole_space_user1/features/home/data/brand_repository.dart';
 import 'package:sole_space_user1/features/home/data/category_repsitory.dart';
 import 'package:sole_space_user1/features/home/data/product_repsotory.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/bottom/bottom_navigation_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -57,12 +58,13 @@ class MyApp extends StatelessWidget {
                   productRepsitory: context.read<ProductRepsitory>(),
                 )..add(FetchProducts()),
           ),
+          BlocProvider(create: (context) => BottomNavigationBloc()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Sole Space',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
           themeMode: ThemeMode.dark,
           onGenerateRoute: AppRouter.onGenerateRoute,
           initialRoute: AppRouter.splash,

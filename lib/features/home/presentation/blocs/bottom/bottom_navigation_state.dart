@@ -1,10 +1,9 @@
 part of 'bottom_navigation_bloc.dart';
 
-sealed class BottomNavigationState extends Equatable {
-  const BottomNavigationState();
-  
-  @override
-  List<Object> get props => [];
-}
+class BottomNavigationState extends Equatable {
+  final int selectedIndex;
+  const BottomNavigationState({required this.selectedIndex});
 
-final class BottomNavigationInitial extends BottomNavigationState {}
+  @override
+  List<Object> get props => [selectedIndex];
+}

@@ -49,6 +49,7 @@ dependencies:
   curved_navigation_bar:
   badges:
   flutter_slidable:
+  flex_color_scheme:
   # Authentication
   google_sign_in:
 

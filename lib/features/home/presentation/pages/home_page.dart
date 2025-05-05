@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
+import 'package:sole_space_user1/core/utils/Navigation_utils.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
@@ -10,6 +12,7 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_even
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:sole_space_user1/features/home/models/brand_model.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/bottom/bottom_navigation_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -197,14 +200,12 @@ class HomePage extends StatelessWidget {
                   height: 200,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    // shrinkWrap: true,
-                    // physics: const NeverScrollableScrollPhysics(),
                     separatorBuilder:
                         (context, index) => const SizedBox(width: 16),
                     itemCount: state.data.length,
                     itemBuilder: (context, index) {
                       final product = state.data[index];
-                      return _buildNewArrivalCard(product, index);
+                      return _buildNewArrivalCard(context, product, index);
                     },
                   ),
                 ),
@@ -251,67 +252,92 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildNewArrivalCard(Product product, int index) {
-    return Container(
-      width: 150,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child:
-                product.imageUrls.isNotEmpty
-                    ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        product.imageUrls[0],
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        errorBuilder:
-                            (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image),
-                      ),
-                    )
-                    : const Icon(Icons.image_not_supported, size: 100),
+  Widget _buildNewArrivalCard(
+    BuildContext context,
+    Product product,
+    int index,
+  ) {
+    return GestureDetector(
+      onTap:
+          () => Navigator.pushNamed(
+            context,
+            AppRouter.productDetails,
+            arguments: product,
           ),
-          smallSpacing,
-          Text(
-            product.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+
+      child: Container(
+        width: 150,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child:
+                  product.imageUrls.isNotEmpty
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          product.imageUrls[0],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image),
+                        ),
+                      )
+                      : const Icon(Icons.image_not_supported, size: 100),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            '\$${product.price!.toStringAsFixed(2)}',
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
+            smallSpacing,
+            Text(
+              product.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              '\$${product.price!.toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildBottomNavBar(context) {
-    return CurvedNavigationBar(
-      backgroundColor: Colors.transparent,
-      color: Theme.of(context).colorScheme.surface,
-      buttonBackgroundColor: Colors.blue,
-      height: 60,
-      animationDuration: const Duration(milliseconds: 300),
-      items: const [
-        Icon(Icons.shopping_bag_outlined),
-        Icon(Icons.favorite_border),
-        Icon(Icons.home_outlined),
-        Icon(Icons.notifications_none_outlined),
-        Icon(Icons.person_outline),
-      ],
+    return BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
+      builder: (context, state) {
+        return CurvedNavigationBar(
+          backgroundColor: Colors.transparent,
+          color: Theme.of(context).colorScheme.surface,
+          buttonBackgroundColor: Colors.blue,
+          height: 60,
+          index: state.selectedIndex,
+          animationDuration: const Duration(milliseconds: 300),
+          items: const [
+            Icon(Icons.shopping_bag_outlined),
+            Icon(Icons.favorite_border),
+            Icon(Icons.home_outlined),
+            Icon(Icons.notifications_none_outlined),
+            Icon(Icons.person_outline),
+          ],
+          onTap: (value) {
+            context.read<BottomNavigationBloc>().add(TabSelected(index: value));
+            // Navigator.of(context).pushNamedAndRemoveUntil(
+            //   NavigationUtils.routes[value],
+            //   (route) => false, // Clear stack to prevent back navigation
+            // );
+          },
+        );
+      },
     );
   }
 }

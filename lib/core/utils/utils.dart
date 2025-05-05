@@ -1,6 +1,7 @@
 //validations
 
 import 'package:flutter/material.dart';
+import 'package:sole_space_user1/config/routes/app_router.dart';
 
 String? validateEmail(String? value) {
   if (value == null || value.isEmpty) {
@@ -72,3 +73,11 @@ const SizedBox smallSpacing = SizedBox(height: 8);
 const SizedBox mediumSpacing = SizedBox(height: 16);
 const SizedBox extraMediumSpacing = SizedBox(height: 32);
 const SizedBox largeSpacing = SizedBox(height: 48);
+
+const List<String> routes = [
+  AppRouter.cart, // Index 0
+  AppRouter.favorite, // Index 1
+  AppRouter.home, // Index 2
+  AppRouter.notification, // Index 3
+  AppRouter.profile, // Index 4
+];
