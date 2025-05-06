@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
-import 'package:sole_space_user1/core/utils/Navigation_utils.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
@@ -196,18 +194,20 @@ class HomePage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder:
-                        (context, index) => const SizedBox(width: 16),
-                    itemCount: state.data.length,
-                    itemBuilder: (context, index) {
-                      final product = state.data[index];
-                      return _buildNewArrivalCard(context, product, index);
-                    },
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.75,
                   ),
+                  itemCount: state.data.length,
+                  itemBuilder: (context, index) {
+                    final product = state.data[index];
+                    return _buildNewArrivalCard(context, product, index);
+                  },
                 ),
               ),
             ],
@@ -331,9 +331,9 @@ class HomePage extends StatelessWidget {
           ],
           onTap: (value) {
             context.read<BottomNavigationBloc>().add(TabSelected(index: value));
-            // Navigator.of(context).pushNamedAndRemoveUntil(
-            //   NavigationUtils.routes[value],
-            //   (route) => false, // Clear stack to prevent back navigation
+            // Navigator.of(context).pushNamed(
+            //   routes[value],
+            //   // (route) => false, // Clear stack to prevent back navigation
             // );
           },
         );

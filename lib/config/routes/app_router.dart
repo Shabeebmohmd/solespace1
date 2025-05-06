@@ -3,11 +3,11 @@ import 'package:sole_space_user1/features/auth/presentation/pages/login_page.dar
 import 'package:sole_space_user1/features/auth/presentation/pages/register_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/cart_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/favorite_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/notification_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/profile_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_page.dart';
 

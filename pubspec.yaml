@@ -50,6 +50,7 @@ dependencies:
   badges:
   flutter_slidable:
   flex_color_scheme:
+  carousel_slider:
   # Authentication
   google_sign_in:
 

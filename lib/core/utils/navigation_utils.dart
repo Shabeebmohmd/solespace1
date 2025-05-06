@@ -1,11 +1,16 @@
-import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:flutter/material.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/home_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 
 class NavigationUtils {
-  static const List<String> routes = [
-    AppRouter.cart, // Index 0
-    AppRouter.favorite, // Index 1
-    AppRouter.home, // Index 2
-    AppRouter.notification, // Index 3
-    AppRouter.profile, // Index 4
+  static final List<Widget> pages = [
+    const HomePage(), // Tab 0
+    const FavoritePage(), // Tab 1
+    HomeMainPage(), // Tab 2 (main home screen)
+    const NotificationPage(), // Tab 3
+    const ProfilePage(), // Tab 4
   ];
 }
