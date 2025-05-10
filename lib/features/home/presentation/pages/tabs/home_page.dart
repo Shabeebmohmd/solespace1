@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/models/brand_model.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
@@ -183,7 +184,7 @@ class HomePage extends StatelessWidget {
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
                     final product = state.data[index];
-                    return _buildNewArrivalCard(context, product, index);
+                    return ProductCard(product: product);
                   },
                 ),
               ),
@@ -282,6 +283,25 @@ class HomePage extends StatelessWidget {
             Text(
               '\$${product.price!.toStringAsFixed(2)}',
               style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+            BlocSelector<ProductBloc, ProductState, bool>(
+              selector:
+                  (state) =>
+                      state is ProductLoaded &&
+                      state.favorites.contains(product),
+              builder: (context, isFavorited) {
+                return IconButton(
+                  icon: Icon(
+                    isFavorited ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorited ? Colors.red : Colors.white,
+                  ),
+                  onPressed: () {
+                    context.read<ProductBloc>().add(
+                      ToggleFavorite(product: product),
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),

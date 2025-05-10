@@ -8,3 +8,12 @@ sealed class ProductEvent extends Equatable {
 }
 
 class FetchProducts extends ProductEvent {}
+
+class ToggleFavorite extends ProductEvent {
+  final Product product;
+
+  const ToggleFavorite({required this.product});
+
+  @override
+  List<Object> get props => [product];
+}

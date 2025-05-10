@@ -5,12 +5,12 @@ import 'package:sole_space_user1/features/auth/presentation/pages/reset_password
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_main_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/home_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
 
 class AppRouter {
   //auth routes
@@ -42,13 +42,13 @@ class AppRouter {
       case homeMain:
         return MaterialPageRoute(builder: (_) => HomeMainPage());
       case cart:
-        return MaterialPageRoute(builder: (_) => CartPage());
+        return MaterialPageRoute(builder: (_) => const CartPage());
       case favorite:
-        return MaterialPageRoute(builder: (_) => FavoritePage());
+        return MaterialPageRoute(builder: (_) => const FavoritePage());
       case notification:
-        return MaterialPageRoute(builder: (_) => NotificationPage());
+        return MaterialPageRoute(builder: (_) => const NotificationPage());
       case profile:
-        return MaterialPageRoute(builder: (_) => ProfilePage());
+        return MaterialPageRoute(builder: (_) => const ProfilePage());
       case productDetails:
         final product = settings.arguments as Product;
         return MaterialPageRoute(
