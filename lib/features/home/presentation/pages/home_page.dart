@@ -1,16 +1,12 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
-import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
+import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/models/brand_model.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/bottom/bottom_navigation_bloc.dart';
+
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -21,31 +17,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: const Text('SoleSpace'),
-        showBackButton: false,
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              showCustomAlertDialog(
-                context: context,
-                title: 'Log out',
-                content: 'Are you sure you want to log out?',
-                onConfirm: () => context.read<AuthBloc>().add(SignOut()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is Unauthenticated) {
-            Navigator.pushReplacementNamed(context, AppRouter.login);
-          }
-        },
-        child: SafeArea(
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            refresh(context);
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +36,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(context),
     );
   }
 
@@ -69,8 +45,9 @@ class HomePage extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Looking for shoes',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: const Icon(Icons.tune),
+          hintStyle: const TextStyle(color: Colors.black),
+          prefixIcon: const Icon(Icons.search, color: Colors.black),
+          suffixIcon: const Icon(Icons.tune, color: Colors.black),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -86,7 +63,7 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<CategoryBloc, CategoryState>(
       builder: (context, state) {
         if (state is CategoryLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return ShimmerLoaders.categoryLoader();
         } else if (state is CategoryLoaded) {
           return Container(
             height: 60,
@@ -126,7 +103,7 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<BrandBloc, BrandState>(
       builder: (context, state) {
         if (state is BrandLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return ShimmerLoaders.brandLoader();
         } else if (state is BrandLoaded) {
           return Column(
             children: [
@@ -171,7 +148,7 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<ProductBloc, ProductState>(
       builder: (context, state) {
         if (state is ProductLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return ShimmerLoaders.newArrivalsLoader();
         } else if (state is ProductLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,35 +286,6 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNavBar(context) {
-    return BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
-      builder: (context, state) {
-        return CurvedNavigationBar(
-          backgroundColor: Colors.transparent,
-          color: Theme.of(context).colorScheme.surface,
-          buttonBackgroundColor: Colors.blue,
-          height: 60,
-          index: state.selectedIndex,
-          animationDuration: const Duration(milliseconds: 300),
-          items: const [
-            Icon(Icons.shopping_bag_outlined),
-            Icon(Icons.favorite_border),
-            Icon(Icons.home_outlined),
-            Icon(Icons.notifications_none_outlined),
-            Icon(Icons.person_outline),
-          ],
-          onTap: (value) {
-            context.read<BottomNavigationBloc>().add(TabSelected(index: value));
-            // Navigator.of(context).pushNamed(
-            //   routes[value],
-            //   // (route) => false, // Clear stack to prevent back navigation
-            // );
-          },
-        );
-      },
     );
   }
 }

@@ -11,9 +11,6 @@ class ProductRepsitory {
       final querySnapshot = await _firestore.collection('products').get();
       final products =
           querySnapshot.docs.map((doc) {
-            log(
-              'Product data: ${doc.data()}',
-            ); // Log the raw Firestore document data
             return Product.fromFirestore(doc.data(), doc.id);
           }).toList();
       return products;

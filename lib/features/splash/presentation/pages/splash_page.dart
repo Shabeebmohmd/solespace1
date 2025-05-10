@@ -57,7 +57,7 @@ class _SplashPageState extends State<SplashPage>
         if (state is Authenticated) {
           // print('Navigating to home');
           log('Navigating to home');
-          Navigator.pushReplacementNamed(context, AppRouter.home);
+          Navigator.pushReplacementNamed(context, AppRouter.homeMain);
         } else if (state is Unauthenticated) {
           //  print('Navigating to login');
           log('Navigating to login');

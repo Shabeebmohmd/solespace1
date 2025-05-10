@@ -5,6 +5,7 @@ import 'package:sole_space_user1/features/auth/presentation/pages/reset_password
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_main_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
@@ -19,6 +20,7 @@ class AppRouter {
   static const String resetPassword = '/reset-password';
 
   static const String home = '/home';
+  static const String homeMain = '/home-Main';
   static const String cart = '/cart';
   static const String favorite = '/favorite';
   static const String notification = '/notification';
@@ -37,6 +39,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const ResetPasswordPage());
       case home:
         return MaterialPageRoute(builder: (_) => HomePage());
+      case homeMain:
+        return MaterialPageRoute(builder: (_) => HomeMainPage());
       case cart:
         return MaterialPageRoute(builder: (_) => CartPage());
       case favorite:

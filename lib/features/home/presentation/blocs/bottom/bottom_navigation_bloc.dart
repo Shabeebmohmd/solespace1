@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'bottom_navigation_event.dart';
@@ -11,22 +10,22 @@ class BottomNavigationBloc
     : super(
         BottomNavigationState(
           selectedIndex: 2,
-          pageController: PageController(initialPage: 2),
+          // pageController: PageController(initialPage: 2),
         ),
       ) {
     on<TabSelected>((event, emit) {
       emit(
         BottomNavigationState(
           selectedIndex: event.index,
-          pageController: state.pageController,
+          // pageController: state.pageController,
         ),
       );
     });
   }
 
-  @override
-  Future<void> close() {
-    state.pageController.dispose();
-    return super.close();
-  }
+  // @override
+  // Future<void> close() {
+  //   state.pageController.dispose();
+  //   return super.close();
+  // }
 }

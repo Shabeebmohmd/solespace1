@@ -1,7 +1,11 @@
 //validations
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 
 String? validateEmail(String? value) {
   if (value == null || value.isEmpty) {
@@ -81,3 +85,9 @@ const List<String> routes = [
   AppRouter.notification, // Index 3
   AppRouter.profile, // Index 4
 ];
+
+void refresh(BuildContext context) {
+  context.read<ProductBloc>().add(FetchProducts());
+  context.read<BrandBloc>().add(FetchBrands());
+  context.read<CategoryBloc>().add(FetchCategory());
+}
