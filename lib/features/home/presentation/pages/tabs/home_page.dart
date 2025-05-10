@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/core/widgets/custom_brand_card.dart';
 import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/models/brand_model.dart';
@@ -131,7 +132,7 @@ class HomePage extends StatelessWidget {
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
                     final brands = state.data[index];
-                    return _buildShoeCard(brands);
+                    return BrandCard(brand: brands);
                   },
                 ),
               ),
@@ -198,110 +199,60 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildShoeCard(Brand brands) {
-    return Container(
-      margin: const EdgeInsets.only(right: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Center(
-                child: Image.network(brands.imageUrl, fit: BoxFit.contain),
-              ),
-            ),
-          ),
-          smallSpacing,
-          Text(
-            brands.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildBrandCard(Brand brands) {
+  //   return Container(
+  //     margin: const EdgeInsets.only(right: 16),
+  //     padding: const EdgeInsets.all(12),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey[900],
+  //       borderRadius: BorderRadius.circular(16),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Expanded(
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(8),
+  //             child: Center(
+  //               child: Image.network(brands.imageUrl, fit: BoxFit.contain),
+  //             ),
+  //           ),
+  //         ),
+  //         smallSpacing,
+  //         Text(
+  //           brands.name,
+  //           style: const TextStyle(
+  //             color: Colors.white,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildNewArrivalCard(
-    BuildContext context,
-    Product product,
-    int index,
-  ) {
-    return GestureDetector(
-      onTap:
-          () => Navigator.pushNamed(
-            context,
-            AppRouter.productDetails,
-            arguments: product,
-          ),
-
-      child: Container(
-        width: 150,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(16),
-        ),
+  Widget _buildBrandCard(Brand brands) {
+    return SizedBox(
+      width: 150, // Set an appropriate width
+      child: Card(
+        elevation: 2,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child:
-                  product.imageUrls.isNotEmpty
-                      ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          product.imageUrls[0],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorBuilder:
-                              (context, error, stackTrace) =>
-                                  const Icon(Icons.broken_image),
-                        ),
-                      )
-                      : const Icon(Icons.image_not_supported, size: 100),
+                  brands.imageUrl.isNotEmpty
+                      ? Image.network(brands.imageUrl, fit: BoxFit.cover)
+                      : const Icon(Icons.image_not_supported, size: 50),
             ),
-            smallSpacing,
-            Text(
-              product.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                brands.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              '\$${product.price!.toStringAsFixed(2)}',
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-            BlocSelector<ProductBloc, ProductState, bool>(
-              selector:
-                  (state) =>
-                      state is ProductLoaded &&
-                      state.favorites.contains(product),
-              builder: (context, isFavorited) {
-                return IconButton(
-                  icon: Icon(
-                    isFavorited ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorited ? Colors.red : Colors.white,
-                  ),
-                  onPressed: () {
-                    context.read<ProductBloc>().add(
-                      ToggleFavorite(product: product),
-                    );
-                  },
-                );
-              },
             ),
           ],
         ),
