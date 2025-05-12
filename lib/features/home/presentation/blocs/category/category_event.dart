@@ -8,3 +8,11 @@ sealed class CategoryEvent extends Equatable {
 }
 
 class FetchCategory extends CategoryEvent {}
+
+class SearchCategory extends CategoryEvent {
+  final String query;
+  const SearchCategory({required this.query});
+
+  @override
+  List<Object> get props => [query];
+}

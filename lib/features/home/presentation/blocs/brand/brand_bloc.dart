@@ -10,6 +10,7 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
   final BrandRepository brandRepository;
   BrandBloc({required this.brandRepository}) : super(BrandInitial()) {
     on<FetchBrands>(_onFetchBrand);
+    on<SearchBrands>(_onSearchBrands);
   }
 
   Future<void> _onFetchBrand(
@@ -22,6 +23,21 @@ class BrandBloc extends Bloc<BrandEvent, BrandState> {
       emit(BrandLoaded(data: brands));
     } catch (e) {
       emit(BrandError(message: e.toString()));
+    }
+  }
+
+  void _onSearchBrands(SearchBrands event, Emitter<BrandState> emit) {
+    if (state is BrandLoaded) {
+      final currentState = state as BrandLoaded;
+      final filteredBrands =
+          currentState.data
+              .where(
+                (brand) => brand.name.toLowerCase().contains(
+                  event.query.toLowerCase(),
+                ),
+              )
+              .toList();
+      emit(BrandLoaded(data: filteredBrands));
     }
   }
 }

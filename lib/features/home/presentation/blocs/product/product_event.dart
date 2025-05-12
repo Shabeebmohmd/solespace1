@@ -17,3 +17,11 @@ class ToggleFavorite extends ProductEvent {
   @override
   List<Object> get props => [product];
 }
+
+class SearchProduct extends ProductEvent {
+  final String query;
+  const SearchProduct({required this.query});
+
+  @override
+  List<Object> get props => [query];
+}

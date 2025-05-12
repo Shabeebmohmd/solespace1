@@ -10,6 +10,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepsitory categoryRepsitory;
   CategoryBloc({required this.categoryRepsitory}) : super(CategoryInitial()) {
     on<FetchCategory>(_onFetchCategory);
+    on<SearchCategory>(_onSearchCategories);
   }
   Future<void> _onFetchCategory(
     FetchCategory event,
@@ -21,6 +22,21 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryLoaded(data: category));
     } catch (e) {
       emit(CategoryError(message: e.toString()));
+    }
+  }
+
+  void _onSearchCategories(SearchCategory event, Emitter<CategoryState> emit) {
+    if (state is CategoryLoaded) {
+      final currentState = state as CategoryLoaded;
+      final filteredCategories =
+          currentState.data
+              .where(
+                (category) => category.name.toLowerCase().contains(
+                  event.query.toLowerCase(),
+                ),
+              )
+              .toList();
+      emit(CategoryLoaded(data: filteredCategories));
     }
   }
 }

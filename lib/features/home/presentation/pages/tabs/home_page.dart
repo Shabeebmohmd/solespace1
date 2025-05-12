@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_brand_card.dart';
 import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
-import 'package:sole_space_user1/features/home/models/brand_model.dart';
-import 'package:sole_space_user1/features/home/models/product_model.dart';
-
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -20,31 +16,43 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            refresh(context);
-            await Future.delayed(const Duration(milliseconds: 500));
-          },
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSearchBar(),
-                _buildCategoryList(),
-                _buildBrand(),
-                _buildNewArrivals(),
-              ],
+        child: Column(
+          children: [
+            _buildSearchBar(context),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  refresh(context);
+                  await Future.delayed(const Duration(milliseconds: 500));
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildCategoryList(),
+                      _buildBrand(),
+                      _buildNewArrivals(),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TextField(
+        onChanged: (value) {
+          context.read<ProductBloc>().add(SearchProduct(query: value));
+          // context.read<BrandBloc>().add(SearchBrands(query: value));
+          // context.read<CategoryBloc>().add(SearchCategory(query: value));
+        },
+        style: TextStyle(color: Colors.black),
         decoration: InputDecoration(
           hintText: 'Looking for shoes',
           hintStyle: const TextStyle(color: Colors.black),
@@ -54,7 +62,7 @@ class HomePage extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          filled: true,
+          // filled: true,iyiy
           fillColor: Colors.grey[200],
         ),
       ),
@@ -196,67 +204,6 @@ class HomePage extends StatelessWidget {
         }
         return const SizedBox.shrink();
       },
-    );
-  }
-
-  // Widget _buildBrandCard(Brand brands) {
-  //   return Container(
-  //     margin: const EdgeInsets.only(right: 16),
-  //     padding: const EdgeInsets.all(12),
-  //     decoration: BoxDecoration(
-  //       color: Colors.grey[900],
-  //       borderRadius: BorderRadius.circular(16),
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       children: [
-  //         Expanded(
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.circular(8),
-  //             child: Center(
-  //               child: Image.network(brands.imageUrl, fit: BoxFit.contain),
-  //             ),
-  //           ),
-  //         ),
-  //         smallSpacing,
-  //         Text(
-  //           brands.name,
-  //           style: const TextStyle(
-  //             color: Colors.white,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _buildBrandCard(Brand brands) {
-    return SizedBox(
-      width: 150, // Set an appropriate width
-      child: Card(
-        elevation: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child:
-                  brands.imageUrl.isNotEmpty
-                      ? Image.network(brands.imageUrl, fit: BoxFit.cover)
-                      : const Icon(Icons.image_not_supported, size: 50),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                brands.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
