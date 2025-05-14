@@ -1,10 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
+import 'package:sole_space_user1/core/utils/snack_bar_utils.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
+import 'package:sole_space_user1/features/home/models/cart_model.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
@@ -38,7 +42,7 @@ class ProductDetailsPage extends StatelessWidget {
                 smallSpacing,
                 _buildColors(),
                 mediumSpacing,
-                _cartButton(),
+                _cartButton(context),
               ],
             ),
           ),
@@ -47,9 +51,22 @@ class ProductDetailsPage extends StatelessWidget {
     );
   }
 
-  CustomButton _cartButton() {
+  CustomButton _cartButton(BuildContext context) {
     return CustomButton(
       onPressed: () {
+        final cartItem = CartItem(
+          productId: product.id!,
+          imageUrl: product.imageUrls.isNotEmpty ? product.imageUrls[0] : '',
+          name: product.name,
+          price: product.price!,
+          quantity: 1,
+        );
+        print(cartItem.imageUrl);
+        context.read<CartBloc>().add(AddToCart(cartItem));
+        SnackbarUtils.showSnackbar(
+          context: context,
+          message: '${product.name} added to cart!',
+        );
         // Add to cart or other action
       },
       text: 'Add to Cart',
