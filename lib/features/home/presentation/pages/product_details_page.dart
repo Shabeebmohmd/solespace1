@@ -17,6 +17,7 @@ class ProductDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentIndexNotifier = ValueNotifier<int>(0);
     return Scaffold(
       appBar: CustomAppBar(title: Text(product.name)),
       body: SafeArea(
@@ -26,7 +27,15 @@ class ProductDetailsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                product.imageUrls.isNotEmpty ? _buildImage() : _buildIcon(),
+                product.imageUrls.isNotEmpty
+                    ? Column(
+                      children: [
+                        _buildImage(currentIndexNotifier),
+                        mediumSpacing,
+                        _buildIndicators(currentIndexNotifier),
+                      ],
+                    )
+                    : _buildIcon(),
                 mediumSpacing,
                 _productName(),
                 smallSpacing,
@@ -61,7 +70,6 @@ class ProductDetailsPage extends StatelessWidget {
           price: product.price!,
           quantity: 1,
         );
-        print(cartItem.imageUrl);
         context.read<CartBloc>().add(AddToCart(cartItem));
         SnackbarUtils.showSnackbar(
           context: context,
@@ -148,15 +156,16 @@ class ProductDetailsPage extends StatelessWidget {
 
   Icon _buildIcon() => const Icon(Icons.image_not_supported, size: 100);
 
-  CarouselSlider _buildImage() {
+  CarouselSlider _buildImage(ValueNotifier<int> currentIndexNotifier) {
     return CarouselSlider(
       options: CarouselOptions(
         height: 300,
         enableInfiniteScroll: true,
         enlargeCenterPage: true,
-        autoPlay: false,
+        autoPlay: true,
         autoPlayInterval: Duration(seconds: 3),
         viewportFraction: 0.9,
+        onPageChanged: (index, reason) => currentIndexNotifier.value = index,
       ),
       items:
           product.imageUrls.map((imageUrl) {
@@ -172,6 +181,34 @@ class ProductDetailsPage extends StatelessWidget {
               ),
             );
           }).toList(),
+    );
+  }
+
+  // New method to build carousel indicators
+  Widget _buildIndicators(ValueNotifier<int> currentIndexNotifier) {
+    return ValueListenableBuilder<int>(
+      valueListenable: currentIndexNotifier,
+      builder: (context, currentIndex, _) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:
+              product.imageUrls.asMap().entries.map((entry) {
+                final index = entry.key;
+                return Container(
+                  width: 8.0,
+                  height: 8.0,
+                  margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        currentIndex == index
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurface,
+                  ),
+                );
+              }).toList(),
+        );
+      },
     );
   }
 }

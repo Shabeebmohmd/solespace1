@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -11,6 +12,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentIndexNotifier = ValueNotifier<int>(0);
     return GestureDetector(
       onTap:
           () => Navigator.pushNamed(
@@ -28,9 +30,33 @@ class ProductCard extends StatelessWidget {
                 Expanded(
                   child:
                       product.imageUrls.isNotEmpty
-                          ? Image.network(
-                            product.imageUrls[0],
-                            fit: BoxFit.cover,
+                          ? Stack(
+                            children: [
+                              CarouselSlider(
+                                options: CarouselOptions(
+                                  height: double.infinity,
+                                  viewportFraction: 1.0,
+                                  enableInfiniteScroll: false,
+                                  autoPlay: false,
+                                  onPageChanged:
+                                      (index, reason) =>
+                                          currentIndexNotifier.value = index,
+                                ),
+                                items:
+                                    product.imageUrls.map((imageUrl) {
+                                      return Builder(
+                                        builder: (BuildContext context) {
+                                          return Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                          );
+                                        },
+                                      );
+                                    }).toList(),
+                              ),
+                              _buildIndicators(currentIndexNotifier),
+                            ],
                           )
                           : const Icon(Icons.image_not_supported, size: 50),
                 ),
@@ -82,6 +108,33 @@ class ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildIndicators(ValueNotifier<int> currentIndexNotifier) {
+    return ValueListenableBuilder<int>(
+      valueListenable: currentIndexNotifier,
+      builder: (context, currentIndex, _) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:
+              product.imageUrls.asMap().entries.map((entry) {
+                final index = entry.key;
+                return Container(
+                  width: 8.0,
+                  height: 8.0,
+                  margin: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color:
+                        currentIndex == index
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurface,
+                  ),
+                );
+              }).toList(),
+        );
+      },
     );
   }
 }
