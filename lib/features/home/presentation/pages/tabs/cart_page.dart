@@ -28,6 +28,9 @@ class CartPage extends StatelessWidget {
               state.cartItems,
               shipping,
             );
+            final subTotal = context.read<CartBloc>().calculateSubTotal(
+              state.cartItems,
+            );
             return Column(
               children: [
                 Expanded(
@@ -40,8 +43,9 @@ class CartPage extends StatelessWidget {
                     },
                   ),
                 ),
+
                 // Display total price
-                _checkOutContainer(context, total),
+                _checkOutContainer(context, total, subTotal),
               ],
             );
           } else if (state is CartError) {
@@ -53,7 +57,11 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  Container _checkOutContainer(BuildContext context, double total) {
+  Container _checkOutContainer(
+    BuildContext context,
+    double total,
+    double subTotal,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
@@ -68,7 +76,7 @@ class CartPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Subtotal:"),
-                Text("\$${total.toStringAsFixed(2)}"),
+                Text("\$${subTotal.toStringAsFixed(2)}"),
               ],
             ),
             mediumSpacing,

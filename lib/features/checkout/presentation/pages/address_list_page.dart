@@ -8,7 +8,7 @@ import 'package:sole_space_user1/features/checkout/data/model/address_model.dart
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_event.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
-import 'package:sole_space_user1/features/checkout/presentation/widget/custom_address_card.dart';
+import 'package:sole_space_user1/features/checkout/presentation/widget/address_list_card.dart';
 
 class AddressListPage extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
@@ -75,18 +75,10 @@ class AddressListPage extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              final addressModel = AddressModel(
-                address: address.address,
-                city: address.city,
-                fullName: address.fullName,
-                id: address.id,
-                phoneNumber: address.phoneNumber,
-                postalCode: address.postalCode,
-                state: address.state,
-                isSelected: address.isSelected,
-              );
-              context.read<AddressBloc>().add(
-                UpdateAddress(userId: user!.uid, address: addressModel),
+              Navigator.pushNamed(
+                context,
+                AppRouter.editAddress,
+                arguments: address,
               );
             },
             icon: Icon(Icons.edit),

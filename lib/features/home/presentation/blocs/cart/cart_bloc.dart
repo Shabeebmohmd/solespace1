@@ -23,6 +23,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     );
   }
 
+  double calculateSubTotal(List<CartItem> cartItems) {
+    return cartItems.fold(
+      0,
+      (totalSum, item) => totalSum + item.price * item.quantity,
+    );
+  }
+
   Future<void> _onLoadCart(LoadCart event, Emitter<CartState> emit) async {
     try {
       emit(CartLoading());

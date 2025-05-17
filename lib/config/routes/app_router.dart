@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/login_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/register_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/add_address_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/address_list_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_page.dart';
+import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
+import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
@@ -37,6 +40,8 @@ class AppRouter {
   static const String checkOut = '/checkout';
   static const String address = '/address';
   static const String addressList = '/address-list';
+  static const String confirmation = '/confirmation';
+  static const String editAddress = '/edit-address';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -56,10 +61,17 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const CartPage());
       case checkOut:
         return MaterialPageRoute(builder: (_) => CheckoutPage());
+      case confirmation:
+        return MaterialPageRoute(builder: (_) => ConfirmationPage());
       case address:
         return MaterialPageRoute(builder: (_) => const AddAddressPage());
       case addressList:
         return MaterialPageRoute(builder: (_) => AddressListPage());
+      case editAddress:
+        final addressModel = settings.arguments as AddressModel;
+        return MaterialPageRoute(
+          builder: (_) => EditAddressPage(addressModel: addressModel),
+        );
       case favorite:
         return MaterialPageRoute(builder: (_) => const FavoritePage());
       case notification:
