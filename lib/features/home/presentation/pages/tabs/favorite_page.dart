@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 
@@ -9,7 +10,10 @@ class FavoritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
+      appBar: CustomAppBar(
+        title: const Text('Favorites'),
+        showBackButton: false,
+      ),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
           if (state is ProductLoaded && state.favorites.isNotEmpty) {

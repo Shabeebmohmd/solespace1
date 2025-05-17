@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/custom_brand_card.dart';
 import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
@@ -15,6 +19,24 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(
+        title: const Text('SoleSpace'),
+        showBackButton: false,
+        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              showCustomAlertDialog(
+                context: context,
+                title: 'Log out',
+                content: 'Are you sure you want to log out?',
+                onConfirm: () => context.read<AuthBloc>().add(SignOut()),
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -49,8 +71,6 @@ class HomePage extends StatelessWidget {
       child: TextField(
         onChanged: (value) {
           context.read<ProductBloc>().add(SearchProduct(query: value));
-          // context.read<BrandBloc>().add(SearchBrands(query: value));
-          // context.read<CategoryBloc>().add(SearchCategory(query: value));
         },
         style: TextStyle(color: Colors.black),
         decoration: InputDecoration(
@@ -118,7 +138,10 @@ class HomePage extends StatelessWidget {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16.0,
+                  horizontal: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -129,7 +152,6 @@ class HomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextButton(onPressed: () {}, child: const Text('See all')),
                   ],
                 ),
               ),
@@ -175,7 +197,12 @@ class HomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextButton(onPressed: () {}, child: const Text('See all')),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRouter.seeAllProducts);
+                      },
+                      child: const Text('See all'),
+                    ),
                   ],
                 ),
               ),

@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/navigation_utils.dart';
-import 'package:sole_space_user1/core/utils/utils.dart';
-import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/bottom/bottom_navigation_bloc.dart';
 
@@ -18,24 +15,6 @@ class HomeMainPage extends StatelessWidget {
     return BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: CustomAppBar(
-            title: const Text('SoleSpace'),
-            showBackButton: false,
-            leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () {
-                  showCustomAlertDialog(
-                    context: context,
-                    title: 'Log out',
-                    content: 'Are you sure you want to log out?',
-                    onConfirm: () => context.read<AuthBloc>().add(SignOut()),
-                  );
-                },
-              ),
-            ],
-          ),
           body: BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is Unauthenticated) {

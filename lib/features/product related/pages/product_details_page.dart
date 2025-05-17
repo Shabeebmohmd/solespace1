@@ -51,7 +51,11 @@ class ProductDetailsPage extends StatelessWidget {
                 smallSpacing,
                 _buildColors(),
                 mediumSpacing,
-                _cartButton(context),
+                BlocBuilder<CartBloc, CartState>(
+                  builder: (context, state) {
+                    return _cartButton(context, state);
+                  },
+                ),
               ],
             ),
           ),
@@ -60,7 +64,7 @@ class ProductDetailsPage extends StatelessWidget {
     );
   }
 
-  CustomButton _cartButton(BuildContext context) {
+  CustomButton _cartButton(BuildContext context, CartState state) {
     return CustomButton(
       onPressed: () {
         final cartItem = CartItem(
@@ -78,6 +82,7 @@ class ProductDetailsPage extends StatelessWidget {
         // Add to cart or other action
       },
       text: 'Add to Cart',
+      isLoading: state is CartLoading,
     );
   }
 

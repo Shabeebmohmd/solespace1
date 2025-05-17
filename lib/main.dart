@@ -6,6 +6,8 @@ import 'package:sole_space_user1/config/theme/app_theme.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/data/repositories/auth_repository.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/password/password_bloc.dart';
+import 'package:sole_space_user1/features/checkout/data/repository/address_repo.dart';
+import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/home/data/brand_repository.dart';
 import 'package:sole_space_user1/features/home/data/category_repsitory.dart';
 import 'package:sole_space_user1/features/home/data/product_repsotory.dart';
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => BrandRepository()),
         RepositoryProvider(create: (context) => CategoryRepsitory()),
         RepositoryProvider(create: (context) => ProductRepsitory()),
+        RepositoryProvider(create: (context) => AddressRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -61,6 +64,12 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(create: (context) => BottomNavigationBloc()),
           BlocProvider(create: (context) => CartBloc()..add(LoadCart())),
+          BlocProvider(
+            create:
+                (context) => AddressBloc(
+                  addressRepository: context.read<AddressRepository>(),
+                ),
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

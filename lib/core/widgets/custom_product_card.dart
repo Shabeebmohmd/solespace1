@@ -7,7 +7,6 @@ import 'package:sole_space_user1/features/home/presentation/blocs/product/produc
 
 class ProductCard extends StatelessWidget {
   final Product product;
-
   const ProductCard({super.key, required this.product});
 
   @override

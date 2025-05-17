@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/login_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/register_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:sole_space_user1/features/checkout/presentation/pages/add_address_page.dart';
+import 'package:sole_space_user1/features/checkout/presentation/pages/address_list_page.dart';
+import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
+import 'package:sole_space_user1/features/product%20related/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
+import 'package:sole_space_user1/features/product%20related/pages/see_all_product.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
 
@@ -25,7 +29,14 @@ class AppRouter {
   static const String favorite = '/favorite';
   static const String notification = '/notification';
   static const String profile = '/profile';
+
+  //product related pages
   static const String productDetails = '/product-details';
+  static const String seeAllProducts = '/see-all-products';
+
+  static const String checkOut = '/checkout';
+  static const String address = '/address';
+  static const String addressList = '/address-list';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -43,6 +54,12 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => HomeMainPage());
       case cart:
         return MaterialPageRoute(builder: (_) => const CartPage());
+      case checkOut:
+        return MaterialPageRoute(builder: (_) => CheckoutPage());
+      case address:
+        return MaterialPageRoute(builder: (_) => const AddAddressPage());
+      case addressList:
+        return MaterialPageRoute(builder: (_) => AddressListPage());
       case favorite:
         return MaterialPageRoute(builder: (_) => const FavoritePage());
       case notification:
@@ -54,6 +71,9 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => ProductDetailsPage(product: product),
         );
+      case seeAllProducts:
+        // final product = settings.arguments as Product;
+        return MaterialPageRoute(builder: (_) => SeeAllProductPage());
       default:
         return MaterialPageRoute(
           builder:

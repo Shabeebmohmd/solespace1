@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/features/home/models/cart_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
@@ -12,6 +14,7 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: Text('Cart'), showBackButton: false),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state is CartLoading) {
@@ -91,7 +94,12 @@ class CartPage extends StatelessWidget {
               ],
             ),
             mediumSpacing,
-            CustomButton(onPressed: () {}, text: 'Checkout'),
+            CustomButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AppRouter.checkOut);
+              },
+              text: 'Checkout',
+            ),
           ],
         ),
       ),
