@@ -14,18 +14,7 @@ class BottomNavigationBloc
         ),
       ) {
     on<TabSelected>((event, emit) {
-      emit(
-        BottomNavigationState(
-          selectedIndex: event.index,
-          // pageController: state.pageController,
-        ),
-      );
+      emit(BottomNavigationState(selectedIndex: event.index));
     });
   }
-
-  // @override
-  // Future<void> close() {
-  //   state.pageController.dispose();
-  //   return super.close();
-  // }
 }

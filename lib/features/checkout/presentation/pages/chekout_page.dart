@@ -1,443 +1,205 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
+import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
-import 'package:sole_space_user1/features/checkout/presentation/widget/custom_address_card.dart';
+import 'package:sole_space_user1/features/checkout/presentation/widget/address_card.dart';
+import 'package:sole_space_user1/features/home/models/cart_model.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
 
 class CheckoutPage extends StatelessWidget {
+  final double shipping = 49;
   const CheckoutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: BlocBuilder<AddressBloc, AddressState>(
-          builder: (context, state) {
-            if (state is AddressLoaded && state.addresses.isNotEmpty) {
-              final selectedAddress = state.addresses.firstWhere(
-                (address) => address.isSelected,
-                orElse:
-                    () =>
-                        state
-                            .addresses
-                            .first, // Fallback to first if none selected
-              );
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomCard(
-                      child: ListTile(
-                        title: Text(selectedAddress.fullName),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(selectedAddress.address),
-                            Text(selectedAddress.city),
-                            Text(selectedAddress.state),
-                            Text(selectedAddress.postalCode),
-                            Text(selectedAddress.phoneNumber),
-                          ],
+        appBar: CustomAppBar(title: Text('Checkout')),
+        body: Column(
+          children: [
+            BlocBuilder<AddressBloc, AddressState>(
+              builder: (context, state) {
+                if (state is AddressLoaded && state.addresses.isNotEmpty) {
+                  final selectedAddress = state.addresses.firstWhere(
+                    (address) => address.isSelected,
+                    orElse: () => state.addresses.first,
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomAddressCard(
+                          address: selectedAddress,
+                          onChangePressed: () {
+                            Navigator.pushNamed(context, AppRouter.addressList);
+                          },
                         ),
-                      ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRouter.addressList);
-                      },
-                      child: const Text("Change"),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomAddressCard(
+                          address: null,
+                          onChangePressed: () {
+                            Navigator.pushNamed(context, AppRouter.address);
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            } else {
-              return TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, AppRouter.address);
+                  );
+                }
+              },
+            ),
+            Expanded(
+              child: BlocBuilder<CartBloc, CartState>(
+                builder: (context, state) {
+                  if (state is CartLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is CartLoaded) {
+                    if (state.cartItems.isEmpty) {
+                      return Center(child: Text('No product added'));
+                    }
+                    final total = context.read<CartBloc>().calculateTotal(
+                      state.cartItems,
+                      shipping,
+                    );
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: ListView.separated(
+                            separatorBuilder:
+                                (context, index) => Divider(height: 40),
+                            itemCount: state.cartItems.length,
+                            itemBuilder: (context, index) {
+                              final item = state.cartItems[index];
+                              return _listTile(item, context);
+                            },
+                          ),
+                        ),
+                        // Display total price
+                        _checkOutContainer(context, total),
+                      ],
+                    );
+                  } else if (state is CartError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return SizedBox();
                 },
-                child: const Text("Add Address"),
-              );
-            }
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Container _checkOutContainer(BuildContext context, double total) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceBright,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Subtotal:"),
+                Text("\$${total.toStringAsFixed(2)}"),
+              ],
+            ),
+            mediumSpacing,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Shipping:"),
+                Text(' \$${shipping.toStringAsFixed(2)}'),
+              ],
+            ),
+            mediumSpacing,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Total: ",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "\$${total.toStringAsFixed(2)}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            mediumSpacing,
+            CustomButton(
+              onPressed: () async {
+                final addressState = context.read<AddressBloc>().state;
+                final cartState = context.read<CartBloc>().state;
+
+                // Check if address and cart are valid
+                if (addressState is AddressLoaded &&
+                    addressState.addresses.isNotEmpty &&
+                    cartState is CartLoaded &&
+                    cartState.cartItems.isNotEmpty) {
+                  // final selectedAddress = addressState.addresses.firstWhere(
+                  //   (address) => address.isSelected,
+                  //   orElse: () => addressState.addresses.first,
+                  // );
+                  Navigator.pushReplacementNamed(
+                    context,
+                    AppRouter.confirmation,
+                  );
+                  // Optionally, navigate to an order confirmation page
+                  // Navigator.pushNamed(context, AppRouter.orderConfirmation);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Please select an address and make sure your cart is not empty.',
+                      ),
+                    ),
+                  );
+                }
+              },
+              text: 'Place order',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ListTile _listTile(CartItem item, BuildContext context) {
+    return ListTile(
+      leading:
+          item.imageUrl.isNotEmpty
+              ? ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  item.imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Icon(Icons.error),
+                ),
+              )
+              : Icon(Icons.image_not_supported),
+      title: Text(item.name),
+      subtitle: Text('Price: \$${item.price.toStringAsFixed(2)}'),
+    );
+  }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:sole_space_user1/config/routes/app_router.dart';
-// import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
-// import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
-// import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
-
-// class ChekoutPage extends StatelessWidget {
-//   const ChekoutPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // // Trigger loading of addresses when the page is built
-//     // context.read<AddressBloc>().add(LoadAddress());
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Checkout')),
-//       body: BlocBuilder<AddressBloc, AddressState>(
-//         builder: (context, addressState) {
-//           // Determine the address to display
-//           String? userAddress;
-//           AddressModel? selectedAddress;
-
-//           if (addressState is AddressLoaded &&
-//               addressState.address.isNotEmpty) {
-//             selectedAddress = addressState.address.first;
-//             userAddress =
-//                 selectedAddress.addressLine; // Uses getter from AddressModel
-//           } else if (addressState is AddressError) {
-//             userAddress = 'Error: ${addressState.message}';
-//           } else if (addressState is AddressLoading) {
-//             userAddress = 'Loading address...';
-//           } else {
-//             userAddress = null; // No address found
-//           }
-
-//           return BlocBuilder<CartBloc, CartState>(
-//             builder: (context, cartState) {
-//               if (cartState is CartLoading) {
-//                 return const Center(child: CircularProgressIndicator());
-//               } else if (cartState is CartLoaded) {
-//                 final cartItems = cartState.cartItems;
-//                 final shipping = 49.0;
-//                 final total = context.read<CartBloc>().calculateTotal(
-//                   cartItems,
-//                   shipping,
-//                 );
-
-//                 return ListView(
-//                   padding: const EdgeInsets.all(16),
-//                   children: [
-//                     // Address Section
-//                     Card(
-//                       child: ListTile(
-//                         title: Text(userAddress ?? 'No address found'),
-//                         subtitle:
-//                             addressState is AddressLoading
-//                                 ? const Text('Loading...')
-//                                 : addressState is AddressError
-//                                 ? Text('Error: ${addressState.message}')
-//                                 : null,
-//                         trailing: ElevatedButton(
-//                           onPressed: () {
-//                             Navigator.pushNamed(context, AppRouter.address);
-//                           },
-//                           child: Text(
-//                             userAddress == null ? 'Add Address' : 'Change',
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 16),
-//                     // Cart Items
-//                     ...cartItems.map(
-//                       (item) => ListTile(
-//                         leading: Image.network(
-//                           item.imageUrl,
-//                           width: 50,
-//                           height: 50,
-//                           fit: BoxFit.cover,
-//                         ),
-//                         title: Text(item.name),
-//                         subtitle: Text('Qty: ${item.quantity}'),
-//                         trailing: Text('\$${item.price.toStringAsFixed(2)}'),
-//                       ),
-//                     ),
-//                     const Divider(),
-//                     // Payment Summary
-//                     ListTile(
-//                       title: const Text('Subtotal'),
-//                       trailing: Text('\$${total.toStringAsFixed(2)}'),
-//                     ),
-//                     ListTile(
-//                       title: const Text('Shipping'),
-//                       trailing: Text('\$${shipping.toStringAsFixed(2)}'),
-//                     ),
-//                     ListTile(
-//                       title: const Text(
-//                         'Total',
-//                         style: TextStyle(fontWeight: FontWeight.bold),
-//                       ),
-//                       trailing: Text(
-//                         '\$${total.toStringAsFixed(2)}',
-//                         style: const TextStyle(fontWeight: FontWeight.bold),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 24),
-//                     // Place Order Button
-//                     ElevatedButton(
-//                       onPressed:
-//                           userAddress == null ||
-//                                   addressState is AddressLoading ||
-//                                   addressState is AddressError
-//                               ? null
-//                               : () {
-//                                 ScaffoldMessenger.of(context).showSnackBar(
-//                                   SnackBar(
-//                                     content: Text(
-//                                       'Order placed for delivery to ${selectedAddress?.addressLine}',
-//                                     ),
-//                                   ),
-//                                 );
-//                               },
-//                       child: const Text('Place Order'),
-//                     ),
-//                   ],
-//                 );
-//               }
-//               return const Center(child: Text('Cart is empty'));
-//             },
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:sole_space_user1/config/routes/app_router.dart';
-// import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
-// import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
-// import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
-
-// class ChekoutPage extends StatelessWidget {
-//   const ChekoutPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Trigger loading of addresses when the page is built
-//     context.read<AddressBloc>().add(LoadAddress());
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Checkout')),
-//       body: BlocBuilder<AddressBloc, AddressState>(
-//         builder: (context, addressState) {
-//           // Determine the address to display
-//           String? userAddress;
-//           AddressModel? selectedAddress;
-
-//           if (addressState is AddressLoaded &&
-//               addressState.address.isNotEmpty) {
-//             selectedAddress =
-//                 addressState.address.first; // Use the first address
-//             userAddress =
-//                 selectedAddress
-//                     .addressLine; // Assuming AddressModel has a fullAddress field
-//           } else if (addressState is AddressError) {
-//             userAddress = 'Error: ${addressState.message}';
-//           } else {
-//             userAddress = null; // No address found
-//           }
-
-//           return BlocBuilder<CartBloc, CartState>(
-//             builder: (context, cartState) {
-//               if (cartState is CartLoading) {
-//                 return const Center(child: CircularProgressIndicator());
-//               } else if (cartState is CartLoaded) {
-//                 final cartItems = cartState.cartItems;
-//                 final shipping = 49.0;
-//                 final total = context.read<CartBloc>().calculateTotal(
-//                   cartItems,
-//                   shipping,
-//                 );
-
-//                 return ListView(
-//                   padding: const EdgeInsets.all(16),
-//                   children: [
-//                     // Address Section
-//                     Card(
-//                       child: ListTile(
-//                         title: Text(userAddress ?? 'No address found'),
-//                         subtitle:
-//                             addressState is AddressLoading
-//                                 ? const Text('Loading...')
-//                                 : null,
-//                         trailing: ElevatedButton(
-//                           onPressed: () {
-//                             // Navigate to AddAddressPage
-//                             Navigator.pushNamed(context, AppRouter.address);
-//                           },
-//                           child: Text(
-//                             userAddress == null ? 'Add Address' : 'Change',
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 16),
-//                     // Cart Items
-//                     ...cartItems.map(
-//                       (item) => ListTile(
-//                         leading: Image.network(
-//                           item.imageUrl,
-//                           width: 50,
-//                           height: 50,
-//                           fit: BoxFit.cover,
-//                         ),
-//                         title: Text(item.name),
-//                         subtitle: Text('Qty: ${item.quantity}'),
-//                         trailing: Text('\$${item.price.toStringAsFixed(2)}'),
-//                       ),
-//                     ),
-//                     const Divider(),
-//                     // Payment Summary
-//                     ListTile(
-//                       title: const Text('Subtotal'),
-//                       trailing: Text('\$${total.toStringAsFixed(2)}'),
-//                     ),
-//                     ListTile(
-//                       title: const Text('Shipping'),
-//                       trailing: Text('\$${shipping.toStringAsFixed(2)}'),
-//                     ),
-//                     ListTile(
-//                       title: const Text(
-//                         'Total',
-//                         style: TextStyle(fontWeight: FontWeight.bold),
-//                       ),
-//                       trailing: Text(
-//                         '\$${total.toStringAsFixed(2)}',
-//                         style: const TextStyle(fontWeight: FontWeight.bold),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 24),
-//                     // Place Order Button
-//                     ElevatedButton(
-//                       onPressed:
-//                           userAddress == null
-//                               ? null
-//                               : () {
-//                                 // Place order logic here, possibly using selectedAddress
-//                                 ScaffoldMessenger.of(context).showSnackBar(
-//                                   SnackBar(
-//                                     content: Text(
-//                                       'Order placed for delivery to ${selectedAddress?.addressLine}',
-//                                     ),
-//                                   ),
-//                                 );
-//                               },
-//                       child: const Text('Place Order'),
-//                     ),
-//                   ],
-//                 );
-//               }
-//               return const SizedBox();
-//             },
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:sole_space_user1/config/routes/app_router.dart';
-// import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
-// import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
-
-// class ChekoutPage extends StatelessWidget {
-//   const ChekoutPage({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     context.read<AddressBloc>().add(LoadAddress());
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Checkout')),
-//       body: BlocBuilder<CartBloc, CartState>(
-//         builder: (context, state) {
-//           if (state is CartLoading) {
-//             return const Center(child: CircularProgressIndicator());
-//           } else if (state is CartLoaded) {
-//             final cartItems = state.cartItems;
-//             final shipping = 49.0;
-//             final total = context.read<CartBloc>().calculateTotal(
-//               cartItems,
-//               shipping,
-//             );
-
-//             return ListView(
-//               padding: const EdgeInsets.all(16),
-//               children: [
-//                 // Address Section
-//                 Card(
-//                   child: ListTile(
-//                     title: Text(userAddress ?? 'No address found'),
-//                     trailing: ElevatedButton(
-//                       onPressed: () {
-//                         // Navigate to AddAddressPage if no address
-//                         if (userAddress == null) {
-//                           Navigator.pushNamed(context, AppRouter.address);
-//                         }
-//                       },
-//                       child: Text(
-//                         userAddress == null ? 'Add Address' : 'Change',
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 16),
-//                 // Cart Items
-//                 ...cartItems.map(
-//                   (item) => ListTile(
-//                     leading: Image.network(
-//                       item.imageUrl,
-//                       width: 50,
-//                       height: 50,
-//                       fit: BoxFit.cover,
-//                     ),
-//                     title: Text(item.name),
-//                     subtitle: Text('Qty: ${item.quantity}'),
-//                     trailing: Text('\$${item.price.toStringAsFixed(2)}'),
-//                   ),
-//                 ),
-//                 const Divider(),
-//                 // Payment Summary
-//                 ListTile(
-//                   title: const Text('Subtotal'),
-//                   trailing: Text('\$${total.toStringAsFixed(2)}'),
-//                 ),
-//                 ListTile(
-//                   title: const Text('Shipping'),
-//                   trailing: Text('\$${shipping.toStringAsFixed(2)}'),
-//                 ),
-//                 ListTile(
-//                   title: const Text(
-//                     'Total',
-//                     style: TextStyle(fontWeight: FontWeight.bold),
-//                   ),
-//                   trailing: Text(
-//                     '\$${total.toStringAsFixed(2)}',
-//                     style: const TextStyle(fontWeight: FontWeight.bold),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 24),
-//                 // Place Order Button
-//                 ElevatedButton(
-//                   onPressed:
-//                       userAddress == null
-//                           ? null
-//                           : () {
-//                             // Place order logic here
-//                           },
-//                   child: const Text('Place Order'),
-//                 ),
-//               ],
-//             );
-//           }
-//           return const SizedBox();
-//         },
-//       ),
-//     );
-//   }
-// }
