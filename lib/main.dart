@@ -16,6 +16,7 @@ import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bl
 import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/theme/theme_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,15 +71,21 @@ class MyApp extends StatelessWidget {
                   addressRepository: context.read<AddressRepository>(),
                 ),
           ),
+          BlocProvider(create: (context) => ThemeBloc()),
         ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Sole Space',
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.dark,
-          onGenerateRoute: AppRouter.onGenerateRoute,
-          initialRoute: AppRouter.splash,
+        child: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Sole Space',
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode:
+                  state is ThemeInitial ? state.themeMode : ThemeMode.dark,
+              onGenerateRoute: AppRouter.onGenerateRoute,
+              initialRoute: AppRouter.splash,
+            );
+          },
         ),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_even
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/theme/theme_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,10 +23,27 @@ class HomePage extends StatelessWidget {
       appBar: CustomAppBar(
         title: const Text('SoleSpace'),
         showBackButton: false,
-        leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+        leading: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            final isDarkMode =
+                state is ThemeInitial && state.themeMode == ThemeMode.dark;
+            return IconButton(
+              icon: Icon(
+                isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                color: isDarkMode ? Colors.white : Colors.yellow,
+              ),
+              onPressed: () {
+                context.read<ThemeBloc>().add(ToggleTheme(!isDarkMode));
+              },
+            );
+          },
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: Icon(
+              Icons.logout,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: () {
               showCustomAlertDialog(
                 context: context,
