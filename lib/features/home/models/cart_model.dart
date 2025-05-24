@@ -6,6 +6,8 @@ class CartItem extends Equatable {
   final String name; // Optional: for display purposes
   final double price;
   final int quantity;
+  final String size;
+  final String color;
 
   const CartItem({
     required this.productId,
@@ -13,6 +15,8 @@ class CartItem extends Equatable {
     required this.name,
     required this.price,
     required this.quantity,
+    required this.size,
+    required this.color,
   });
 
   // Convert Firestore document to CartItem
@@ -23,6 +27,8 @@ class CartItem extends Equatable {
       name: data['name'] as String? ?? '',
       price: (data['price'] as num).toDouble(),
       quantity: data['quantity'] as int,
+      size: data['size'] as String? ?? '',
+      color: data['color'] as String? ?? '',
     );
   }
 
@@ -34,10 +40,20 @@ class CartItem extends Equatable {
       'name': name,
       'price': price,
       'quantity': quantity,
+      'size': size,
+      'color': color,
       'addedAt': DateTime.now(),
     };
   }
 
   @override
-  List<Object> get props => [productId, imageUrl, name, price, quantity];
+  List<Object> get props => [
+    productId,
+    imageUrl,
+    name,
+    price,
+    quantity,
+    size,
+    color,
+  ];
 }

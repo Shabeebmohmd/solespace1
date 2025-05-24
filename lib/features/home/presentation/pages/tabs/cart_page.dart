@@ -131,7 +131,13 @@ class CartPage extends StatelessWidget {
               )
               : Icon(Icons.image_not_supported),
       title: Text(item.name),
-      subtitle: Text('Price: \$${item.price.toStringAsFixed(2)}'),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Price: \$${item.price.toStringAsFixed(2)}'),
+          Text('Size: ${item.size}, Color: ${item.color}'),
+        ],
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -140,10 +146,17 @@ class CartPage extends StatelessWidget {
             onPressed: () {
               if (item.quantity > 1) {
                 context.read<CartBloc>().add(
-                  UpdateCartQuantity(item.productId, item.quantity - 1),
+                  UpdateCartQuantity(
+                    '${item.productId}_${item.size}_${item.color}',
+                    item.quantity - 1,
+                  ),
                 );
               } else {
-                context.read<CartBloc>().add(RemoveFromCart(item.productId));
+                context.read<CartBloc>().add(
+                  RemoveFromCart(
+                    '${item.productId}_${item.size}_${item.color}',
+                  ),
+                );
               }
             },
           ),
@@ -155,14 +168,19 @@ class CartPage extends StatelessWidget {
             ),
             onPressed: () {
               context.read<CartBloc>().add(
-                UpdateCartQuantity(item.productId, item.quantity + 1),
+                UpdateCartQuantity(
+                  '${item.productId}_${item.size}_${item.color}',
+                  item.quantity + 1,
+                ),
               );
             },
           ),
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              context.read<CartBloc>().add(RemoveFromCart(item.productId));
+              context.read<CartBloc>().add(
+                RemoveFromCart('${item.productId}_${item.size}_${item.color}'),
+              );
             },
           ),
         ],

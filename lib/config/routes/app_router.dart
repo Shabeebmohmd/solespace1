@@ -9,6 +9,7 @@ import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_pa
 import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
