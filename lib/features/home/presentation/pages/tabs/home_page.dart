@@ -13,6 +13,7 @@ import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bl
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/theme/theme_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/widgets/filter_dialog.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -96,7 +97,12 @@ class HomePage extends StatelessWidget {
           hintStyle: const TextStyle(color: Colors.black),
           prefixIcon: const Icon(Icons.search, color: Colors.black),
           suffixIcon: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const FilterDialog(),
+              );
+            },
             icon: Icon(Icons.tune, color: Colors.black),
           ),
           border: OutlineInputBorder(

@@ -15,6 +15,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<FetchProductsByBrand>(_onFetchProductsByBrand);
     on<ToggleFavorite>(_onToggleFavorite);
     on<SearchProduct>(_onSearchProducts);
+    on<FilterProducts>(_onFilterProducts);
   }
 
   Future<void> _onFetchProduct(
@@ -100,6 +101,70 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
                 ),
               )
               .toList();
+      emit(
+        ProductLoaded(
+          data: filteredProducts,
+          favorites: currentState.favorites,
+        ),
+      );
+    }
+  }
+
+  void _onFilterProducts(FilterProducts event, Emitter<ProductState> emit) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      var filteredProducts = _allProducts;
+
+      if (event.brandId != null && event.brandId!.isNotEmpty) {
+        filteredProducts =
+            filteredProducts
+                .where((product) => product.brandId == event.brandId)
+                .toList();
+      }
+
+      if (event.categoryId != null && event.categoryId!.isNotEmpty) {
+        filteredProducts =
+            filteredProducts
+                .where((product) => product.categoryId == event.categoryId)
+                .toList();
+      }
+
+      if (event.minPrice != null && event.minPrice! > 0) {
+        filteredProducts =
+            filteredProducts
+                .where(
+                  (product) =>
+                      product.discountPrice != null &&
+                      product.discountPrice! >= event.minPrice!,
+                )
+                .toList();
+      }
+
+      if (event.maxPrice != null && event.maxPrice! > 0) {
+        filteredProducts =
+            filteredProducts
+                .where(
+                  (product) =>
+                      product.discountPrice != null &&
+                      product.discountPrice! <= event.maxPrice!,
+                )
+                .toList();
+      }
+
+      if (event.color != null && event.color!.isNotEmpty) {
+        filteredProducts =
+            filteredProducts
+                .where((product) => product.colors.contains(event.color))
+                .toList();
+      }
+
+      if (event.size != null && event.size!.isNotEmpty) {
+        filteredProducts =
+            filteredProducts
+                .where((product) => product.sizes.contains(event.size))
+                .toList();
+      }
+
       emit(
         ProductLoaded(
           data: filteredProducts,

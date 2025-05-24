@@ -34,3 +34,31 @@ class SearchProduct extends ProductEvent {
   @override
   List<Object> get props => [query];
 }
+
+class FilterProducts extends ProductEvent {
+  final String? brandId;
+  final String? categoryId;
+  final double? minPrice;
+  final double? maxPrice;
+  final String? color;
+  final String? size;
+
+  const FilterProducts({
+    this.brandId,
+    this.categoryId,
+    this.minPrice,
+    this.maxPrice,
+    this.color,
+    this.size,
+  });
+
+  @override
+  List<Object> get props => [
+    brandId ?? '',
+    categoryId ?? '',
+    minPrice ?? 0.0,
+    maxPrice ?? 0.0,
+    color ?? '',
+    size ?? '',
+  ];
+}
