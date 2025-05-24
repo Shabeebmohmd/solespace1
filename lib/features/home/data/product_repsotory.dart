@@ -18,4 +18,22 @@ class ProductRepsitory {
       throw Exception('Failed to fetch products: $e');
     }
   }
+
+  Future<List<Product>> fetchProductsByBrand(String brandId) async {
+    log('Fetching Products for Brand ID: $brandId');
+    try {
+      final querySnapshot =
+          await _firestore
+              .collection('products')
+              .where('brandId', isEqualTo: brandId)
+              .get();
+      final products =
+          querySnapshot.docs
+              .map((doc) => Product.fromFirestore(doc.data(), doc.id))
+              .toList();
+      return products;
+    } catch (e) {
+      throw Exception('Failed to fetch products for brand: $e');
+    }
+  }
 }

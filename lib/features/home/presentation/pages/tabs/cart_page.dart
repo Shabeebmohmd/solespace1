@@ -35,7 +35,7 @@ class CartPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: ListView.separated(
-                    separatorBuilder: (context, index) => Divider(height: 40),
+                    separatorBuilder: (context, index) => Divider(height: 30),
                     itemCount: state.cartItems.length,
                     itemBuilder: (context, index) {
                       final item = state.cartItems[index];

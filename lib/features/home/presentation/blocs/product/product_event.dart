@@ -9,6 +9,15 @@ sealed class ProductEvent extends Equatable {
 
 class FetchProducts extends ProductEvent {}
 
+class FetchProductsByBrand extends ProductEvent {
+  final String brandId;
+
+  const FetchProductsByBrand({required this.brandId});
+
+  @override
+  List<Object> get props => [brandId];
+}
+
 class ToggleFavorite extends ProductEvent {
   final Product product;
 

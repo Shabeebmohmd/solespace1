@@ -9,6 +9,7 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/password/passw
 import 'package:sole_space_user1/features/checkout/data/repository/address_repo.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/home/data/brand_repository.dart';
+import 'package:sole_space_user1/features/home/data/cart_repository.dart';
 import 'package:sole_space_user1/features/home/data/category_repsitory.dart';
 import 'package:sole_space_user1/features/home/data/product_repsotory.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/bottom/bottom_navigation_bloc.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => CategoryRepsitory()),
         RepositoryProvider(create: (context) => ProductRepsitory()),
         RepositoryProvider(create: (context) => AddressRepository()),
+        RepositoryProvider(create: (context) => CartRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -64,7 +66,12 @@ class MyApp extends StatelessWidget {
                 )..add(FetchProducts()),
           ),
           BlocProvider(create: (context) => BottomNavigationBloc()),
-          BlocProvider(create: (context) => CartBloc()..add(LoadCart())),
+          BlocProvider(
+            create:
+                (context) =>
+                    CartBloc(cartRepository: context.read<CartRepository>())
+                      ..add(LoadCart()),
+          ),
           BlocProvider(
             create:
                 (context) => AddressBloc(

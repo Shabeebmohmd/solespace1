@@ -95,12 +95,14 @@ class HomePage extends StatelessWidget {
           hintText: 'Looking for shoes',
           hintStyle: const TextStyle(color: Colors.black),
           prefixIcon: const Icon(Icons.search, color: Colors.black),
-          suffixIcon: const Icon(Icons.tune, color: Colors.black),
+          suffixIcon: IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.tune, color: Colors.black),
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          // filled: true,iyiy
           fillColor: Colors.grey[200],
         ),
       ),
@@ -180,7 +182,18 @@ class HomePage extends StatelessWidget {
                   itemCount: state.data.length,
                   itemBuilder: (context, index) {
                     final brands = state.data[index];
-                    return BrandCard(brand: brands);
+                    return InkWell(
+                      onTap: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          AppRouter.brandBasedProducts,
+                          arguments: brands.id,
+                        );
+                        // ignore: use_build_context_synchronously
+                        refresh(context);
+                      },
+                      child: BrandCard(brand: brands),
+                    );
                   },
                 ),
               ),

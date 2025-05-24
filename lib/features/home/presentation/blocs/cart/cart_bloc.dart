@@ -1,16 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/features/home/data/cart_repository.dart';
 import 'package:sole_space_user1/features/home/models/cart_model.dart';
 
 part 'cart_event.dart';
 part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  CartBloc() : super(CartLoading()) {
+  final CartRepository cartRepository;
+  CartBloc({required this.cartRepository}) : super(CartLoading()) {
     on<LoadCart>(_onLoadCart);
     on<AddToCart>(_onAddToCart);
     on<RemoveFromCart>(_onRemoveFromCart);
@@ -33,24 +31,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onLoadCart(LoadCart event, Emitter<CartState> emit) async {
     try {
       emit(CartLoading());
-      final user = _auth.currentUser;
-      if (user == null) {
-        emit(CartError('User not logged in'));
-        return;
-      }
-
-      final snapshot =
-          await _firestore
-              .collection('users')
-              .doc(user.uid)
-              .collection('cart')
-              .get();
-
-      final cartItems =
-          snapshot.docs
-              .map((doc) => CartItem.fromFirestore(doc.data()))
-              .toList();
-
+      final cartItems = await cartRepository.fetchCartItems();
       emit(CartLoaded(cartItems));
     } catch (e) {
       emit(CartError('Failed to load cart: $e'));
@@ -59,20 +40,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Future<void> _onAddToCart(AddToCart event, Emitter<CartState> emit) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
-        emit(CartError('User not logged in'));
-        return;
-      }
-
-      final cartRef = _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('cart')
-          .doc(event.cartItem.productId);
-
-      await cartRef.set(event.cartItem.toFirestore());
-      add(LoadCart()); // Reload cart after adding
+      await cartRepository.addToCart(event.cartItem);
+      add(LoadCart());
     } catch (e) {
       emit(CartError('Failed to add to cart: $e'));
     }
@@ -83,20 +52,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
-        emit(CartError('User not logged in'));
-        return;
-      }
-
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('cart')
-          .doc(event.productId)
-          .delete();
-
-      add(LoadCart()); // Reload cart after removing
+      await cartRepository.removeFromCart(event.productId);
+      add(LoadCart());
     } catch (e) {
       emit(CartError('Failed to remove from cart: $e'));
     }
@@ -107,20 +64,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
-        emit(CartError('User not logged in'));
-        return;
-      }
-
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('cart')
-          .doc(event.productId)
-          .update({'quantity': event.quantity});
-
-      add(LoadCart()); // Reload cart after updating
+      await cartRepository.updateCartQuantity(event.productId, event.quantity);
+      add(LoadCart());
     } catch (e) {
       emit(CartError('Failed to update cart: $e'));
     }

@@ -78,7 +78,7 @@ class CheckoutPage extends StatelessWidget {
                         Expanded(
                           child: ListView.separated(
                             separatorBuilder:
-                                (context, index) => Divider(height: 40),
+                                (context, index) => Divider(height: 10),
                             itemCount: state.cartItems.length,
                             itemBuilder: (context, index) {
                               final item = state.cartItems[index];
@@ -200,6 +200,7 @@ class CheckoutPage extends StatelessWidget {
               : Icon(Icons.image_not_supported),
       title: Text(item.name),
       subtitle: Text('Price: \$${item.price.toStringAsFixed(2)}'),
+      trailing: Text('Qty: ${item.quantity}'),
     );
   }
 }

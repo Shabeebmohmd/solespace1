@@ -22,14 +22,17 @@ class AddressListPage extends StatelessWidget {
         body: BlocBuilder<AddressBloc, AddressState>(
           builder: (context, state) {
             if (state is AddressLoaded && state.addresses.isNotEmpty) {
-              return ListView.builder(
-                itemCount: state.addresses.length,
-                itemBuilder: (context, index) {
-                  final addresses = state.addresses[index];
-                  return CustomCard(
-                    child: _listTileforAddress(addresses, context),
-                  );
-                },
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView.builder(
+                  itemCount: state.addresses.length,
+                  itemBuilder: (context, index) {
+                    final addresses = state.addresses[index];
+                    return CustomCard(
+                      child: _listTileforAddress(addresses, context),
+                    );
+                  },
+                ),
               );
             } else if (state is AddressLoading) {
               return Center(child: CircularProgressIndicator());

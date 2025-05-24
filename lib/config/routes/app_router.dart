@@ -13,6 +13,7 @@ import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
+import 'package:sole_space_user1/features/product%20related/pages/brand_based_product_list.dart';
 import 'package:sole_space_user1/features/product%20related/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/product%20related/pages/see_all_product.dart';
@@ -36,6 +37,7 @@ class AppRouter {
   //product related pages
   static const String productDetails = '/product-details';
   static const String seeAllProducts = '/see-all-products';
+  static const String brandBasedProducts = '/brand-based-products';
 
   static const String checkOut = '/checkout';
   static const String address = '/address';
@@ -82,6 +84,11 @@ class AppRouter {
         final product = settings.arguments as Product;
         return MaterialPageRoute(
           builder: (_) => ProductDetailsPage(product: product),
+        );
+      case brandBasedProducts:
+        return MaterialPageRoute(
+          builder: (_) => BrandBasedProductListPage(),
+          settings: settings,
         );
       case seeAllProducts:
         // final product = settings.arguments as Product;
