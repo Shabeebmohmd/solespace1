@@ -9,6 +9,7 @@ import 'package:sole_space_user1/features/checkout/presentation/blocs/address/ad
 import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_event.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
+import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_form.dart';
 import 'package:uuid/uuid.dart';
 
 class AddAddressPage extends StatelessWidget {
@@ -17,7 +18,6 @@ class AddAddressPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    // Form key and controllers
     final formKey = GlobalKey<FormState>();
     final fullNameController = TextEditingController();
     final cityController = TextEditingController();
@@ -26,7 +26,6 @@ class AddAddressPage extends StatelessWidget {
     final addressController = TextEditingController();
     final phoneNumberController = TextEditingController();
 
-    // Form submission logic
     void submitForm() {
       if (formKey.currentState!.validate()) {
         final uuid = Uuid();
@@ -48,7 +47,6 @@ class AddAddressPage extends StatelessWidget {
       body: BlocListener<AddressBloc, AddressState>(
         listener: (context, state) {
           if (state is AddressLoaded) {
-            // Address added successfully, navigate back
             Navigator.pop(context);
             SnackbarUtils.showSnackbar(
               context: context,
@@ -63,35 +61,17 @@ class AddAddressPage extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: formKey,
-            child: ListView(
-              children: [
-                _nameField(fullNameController),
-                mediumSpacing,
-                _cityField(cityController),
-                mediumSpacing,
-                _stateField(stateController),
-                mediumSpacing,
-                _postalField(postalCodeController),
-                mediumSpacing,
-                _phoneField(phoneNumberController),
-                mediumSpacing,
-                _addressField(addressController),
-                extraMediumSpacing,
-                BlocBuilder<AddressBloc, AddressState>(
-                  builder: (context, state) {
-                    return ElevatedButton(
-                      onPressed: state is AddressLoading ? null : submitForm,
-                      child:
-                          state is AddressLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Save Address'),
-                    );
-                  },
-                ),
-              ],
-            ),
+          child: AddressForm(
+            formKey: formKey,
+            fullNameController: fullNameController,
+            cityController: cityController,
+            stateController: stateController,
+            postalCodeController: postalCodeController,
+            phoneNumberController: phoneNumberController,
+            addressController: addressController,
+            onSubmit: submitForm,
+            isLoading: context.watch<AddressBloc>().state is AddressLoading,
+            submitButtonText: 'Save Address',
           ),
         ),
       ),

@@ -29,6 +29,19 @@ class _FilterDialogState extends State<FilterDialog> {
     super.dispose();
   }
 
+  void _clearFilters() {
+    setState(() {
+      selectedBrandId = null;
+      selectedCategoryId = null;
+      selectedColor = null;
+      selectedSize = null;
+      minPriceController.clear();
+      maxPriceController.clear();
+    });
+    context.read<ProductBloc>().add(const FilterProducts());
+    Navigator.pop(context);
+  }
+
   void _applyFilters() {
     final minPrice = double.tryParse(minPriceController.text);
     final maxPrice = double.tryParse(maxPriceController.text);
@@ -223,12 +236,22 @@ class _FilterDialogState extends State<FilterDialog> {
                     }).toList(),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: CustomButton(
-                  onPressed: _applyFilters,
-                  text: 'Apply Filters',
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _clearFilters,
+                      child: const Text('Clear Filters'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomButton(
+                      onPressed: _applyFilters,
+                      text: 'Apply Filters',
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/core/utils/snack_bar_utils.dart';
-import 'package:sole_space_user1/core/utils/utils.dart';
-import 'package:sole_space_user1/core/utils/validate_utils.dart';
-import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
 import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_event.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
+import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_form.dart';
 
 class EditAddressPage extends StatelessWidget {
   final AddressModel addressModel;
@@ -17,7 +15,6 @@ class EditAddressPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    // Form key and controllers
     final formKey = GlobalKey<FormState>();
     final fullNameController = TextEditingController(
       text: addressModel.fullName,
@@ -32,7 +29,6 @@ class EditAddressPage extends StatelessWidget {
       text: addressModel.phoneNumber,
     );
 
-    // Form submission logic
     void submitForm() {
       if (formKey.currentState!.validate()) {
         final updatedAddress = AddressModel(
@@ -56,7 +52,6 @@ class EditAddressPage extends StatelessWidget {
       body: BlocListener<AddressBloc, AddressState>(
         listener: (context, state) {
           if (state is AddressLoaded) {
-            // Address updated successfully, navigate back
             Navigator.pop(context);
             SnackbarUtils.showSnackbar(
               context: context,
@@ -71,93 +66,20 @@ class EditAddressPage extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: formKey,
-            child: ListView(
-              children: [
-                _nameField(fullNameController),
-                mediumSpacing,
-                _cityField(cityController),
-                mediumSpacing,
-                _stateField(stateController),
-                mediumSpacing,
-                _postalField(postalCodeController),
-                mediumSpacing,
-                _phoneField(phoneNumberController),
-                mediumSpacing,
-                _addressField(addressController),
-                extraMediumSpacing,
-                BlocBuilder<AddressBloc, AddressState>(
-                  builder: (context, state) {
-                    return ElevatedButton(
-                      onPressed: state is AddressLoading ? null : submitForm,
-                      child:
-                          state is AddressLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Save Changes'),
-                    );
-                  },
-                ),
-              ],
-            ),
+          child: AddressForm(
+            formKey: formKey,
+            fullNameController: fullNameController,
+            cityController: cityController,
+            stateController: stateController,
+            postalCodeController: postalCodeController,
+            phoneNumberController: phoneNumberController,
+            addressController: addressController,
+            onSubmit: submitForm,
+            isLoading: context.watch<AddressBloc>().state is AddressLoading,
+            submitButtonText: 'Save Changes',
           ),
         ),
       ),
-    );
-  }
-
-  CustomTextField _nameField(TextEditingController fullNameController) {
-    return CustomTextField(
-      controller: fullNameController,
-      label: 'Full name',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Full name'),
-    );
-  }
-
-  CustomTextField _cityField(TextEditingController cityController) {
-    return CustomTextField(
-      controller: cityController,
-      label: 'City',
-      validator: (value) => ValidationUtils.validateRequired(value, 'City'),
-    );
-  }
-
-  CustomTextField _stateField(TextEditingController stateController) {
-    return CustomTextField(
-      controller: stateController,
-      label: 'State/Province',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'State/Province'),
-    );
-  }
-
-  CustomTextField _postalField(TextEditingController postalCodeController) {
-    return CustomTextField(
-      controller: postalCodeController,
-      keyboardType: TextInputType.number,
-      label: 'Postal code',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Postal code'),
-    );
-  }
-
-  CustomTextField _phoneField(TextEditingController phoneNumberController) {
-    return CustomTextField(
-      controller: phoneNumberController,
-      keyboardType: TextInputType.phone,
-      label: 'Phone no',
-      validator: (value) => ValidationUtils.validateNumber(value, 'Phone no'),
-    );
-  }
-
-  CustomTextField _addressField(TextEditingController addressController) {
-    return CustomTextField(
-      controller: addressController,
-      maxLines: 3,
-      label: 'Address line',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Address line'),
     );
   }
 }

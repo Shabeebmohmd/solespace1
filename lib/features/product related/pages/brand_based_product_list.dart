@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/widgets/brand_based_product_card.dart';
+import 'package:sole_space_user1/features/home/presentation/widgets/home/brand_based_product_card.dart';
 
 class BrandBasedProductListPage extends StatelessWidget {
   const BrandBasedProductListPage({super.key});

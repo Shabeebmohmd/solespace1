@@ -42,41 +42,35 @@ class MyApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create:
-                (context) =>
-                    AuthBloc(authRepository: context.read<AuthRepository>()),
+            create: (context) =>
+                AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
           BlocProvider(create: (context) => PasswordBloc()),
           BlocProvider(
-            create:
-                (context) =>
-                    BrandBloc(brandRepository: context.read<BrandRepository>())
-                      ..add(FetchBrands()),
+            create: (context) =>
+                BrandBloc(brandRepository: context.read<BrandRepository>())
+                  ..add(FetchBrands()),
           ),
           BlocProvider(
-            create:
-                (context) => CategoryBloc(
-                  categoryRepsitory: context.read<CategoryRepsitory>(),
-                )..add(FetchCategory()),
+            create: (context) => CategoryBloc(
+              categoryRepsitory: context.read<CategoryRepsitory>(),
+            )..add(FetchCategory()),
           ),
           BlocProvider(
-            create:
-                (context) => ProductBloc(
-                  productRepsitory: context.read<ProductRepsitory>(),
-                )..add(FetchProducts()),
+            create: (context) => ProductBloc(
+              productRepsitory: context.read<ProductRepsitory>(),
+            )..add(FetchProducts()),
           ),
           BlocProvider(create: (context) => BottomNavigationBloc()),
           BlocProvider(
-            create:
-                (context) =>
-                    CartBloc(cartRepository: context.read<CartRepository>())
-                      ..add(LoadCart()),
+            create: (context) =>
+                CartBloc(cartRepository: context.read<CartRepository>())
+                  ..add(LoadCart()),
           ),
           BlocProvider(
-            create:
-                (context) => AddressBloc(
-                  addressRepository: context.read<AddressRepository>(),
-                ),
+            create: (context) => AddressBloc(
+              addressRepository: context.read<AddressRepository>(),
+            ),
           ),
           BlocProvider(create: (context) => ThemeBloc()),
         ],

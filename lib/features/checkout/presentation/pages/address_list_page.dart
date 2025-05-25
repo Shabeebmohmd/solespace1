@@ -8,7 +8,7 @@ import 'package:sole_space_user1/features/checkout/data/model/address_model.dart
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_event.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
-import 'package:sole_space_user1/features/checkout/presentation/widget/address_list_card.dart';
+import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_list_item.dart';
 
 class AddressListPage extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
@@ -18,7 +18,7 @@ class AddressListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(title: Text('Addresses')),
+        appBar: CustomAppBar(title: const Text('Addresses')),
         body: BlocBuilder<AddressBloc, AddressState>(
           builder: (context, state) {
             if (state is AddressLoaded && state.addresses.isNotEmpty) {
@@ -27,15 +27,37 @@ class AddressListPage extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: state.addresses.length,
                   itemBuilder: (context, index) {
-                    final addresses = state.addresses[index];
-                    return CustomCard(
-                      child: _listTileforAddress(addresses, context),
+                    final address = state.addresses[index];
+                    return AddressListItem(
+                      address: address,
+                      onEdit: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRouter.editAddress,
+                          arguments: address,
+                        );
+                      },
+                      onDelete: () {
+                        context.read<AddressBloc>().add(
+                          DeleteAddress(
+                            userId: user!.uid,
+                            addressId: address.id,
+                          ),
+                        );
+                      },
+                      onSelect: (bool? value) {
+                        if (value == true) {
+                          context.read<AddressBloc>().add(
+                            SelectAddress(addressId: address.id),
+                          );
+                        }
+                      },
                     );
                   },
                 ),
               );
             } else if (state is AddressLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (state is AddressError) {
               SnackbarUtils.showSnackbar(
                 context: context,
@@ -49,52 +71,8 @@ class AddressListPage extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, AppRouter.address);
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
-      ),
-    );
-  }
-
-  ListTile _listTileforAddress(AddressModel address, BuildContext context) {
-    return ListTile(
-      leading: Checkbox(
-        value: address.isSelected,
-        onChanged: (bool? value) {
-          if (value == true) {
-            context.read<AddressBloc>().add(
-              SelectAddress(addressId: address.id),
-            );
-          }
-        },
-      ),
-      title: Text(
-        address.fullName,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(address.address),
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                AppRouter.editAddress,
-                arguments: address,
-              );
-            },
-            icon: Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: () {
-              context.read<AddressBloc>().add(
-                DeleteAddress(userId: user!.uid, addressId: address.id),
-              );
-            },
-            icon: Icon(Icons.delete),
-          ),
-        ],
       ),
     );
   }
