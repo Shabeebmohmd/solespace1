@@ -139,6 +139,14 @@ class ProductDetailsPage extends StatelessWidget {
             return ChoiceChip(
               label: Text(color),
               selected: state.selectedColor == color,
+              selectedColor: Theme.of(context).colorScheme.secondary,
+              materialTapTargetSize:
+                  MaterialTapTargetSize.padded, // Makes the chip larger
+              visualDensity: VisualDensity.compact, // Adjusts the density
+              labelStyle: const TextStyle(
+                fontSize: 16,
+              ), // Increases label font size
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               onSelected: (selected) {
                 if (selected) {
                   context.read<ProductDetailsBloc>().add(SelectColor(color));
@@ -157,6 +165,17 @@ class ProductDetailsPage extends StatelessWidget {
             return ChoiceChip(
               label: Text(size),
               selected: state.selectedSize == size,
+              selectedColor: Theme.of(context).colorScheme.surfaceTint,
+              materialTapTargetSize:
+                  MaterialTapTargetSize.padded, // Makes the chip larger
+              visualDensity: VisualDensity.compact, // Adjusts the density
+              labelStyle: const TextStyle(
+                fontSize: 16,
+              ), // Increases label font size
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ), // Increases chip padding
               onSelected: (selected) {
                 if (selected) {
                   context.read<ProductDetailsBloc>().add(SelectSize(size));

@@ -12,7 +12,7 @@ class SeeAllProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppBar(),
+        appBar: CustomAppBar(title: Text('New arrivals')),
         body: SingleChildScrollView(child: _buildNewArrivals()),
       ),
     );
