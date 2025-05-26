@@ -30,7 +30,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Future<void> _onLoadCart(LoadCart event, Emitter<CartState> emit) async {
     try {
-      emit(CartLoading());
+      final currentItems =
+          state is CartLoading
+              ? (state as CartLoading).cartItems
+              : <CartItem>[];
+      emit(CartLoading(cartItems: currentItems));
       final cartItems = await cartRepository.fetchCartItems();
       emit(CartLoaded(cartItems));
     } catch (e) {
@@ -40,6 +44,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Future<void> _onAddToCart(AddToCart event, Emitter<CartState> emit) async {
     try {
+      final currentItems =
+          state is CartLoading
+              ? (state as CartLoading).cartItems
+              : <CartItem>[];
+      emit(CartLoading(cartItems: currentItems));
       await cartRepository.addToCart(event.cartItem);
       add(LoadCart());
     } catch (e) {
@@ -52,6 +61,19 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
+      final currentItems =
+          state is CartLoading
+              ? (state as CartLoading).cartItems
+              : <CartItem>[];
+      final updatedItems =
+          currentItems
+              .where(
+                (item) =>
+                    '${item.productId}_${item.size}_${item.color}' !=
+                    event.productId,
+              )
+              .toList();
+      emit(CartLoading(cartItems: updatedItems));
       await cartRepository.removeFromCart(event.productId);
       add(LoadCart());
     } catch (e) {
@@ -64,6 +86,27 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     Emitter<CartState> emit,
   ) async {
     try {
+      final currentItems =
+          state is CartLoading
+              ? (state as CartLoading).cartItems
+              : <CartItem>[];
+      final updatedItems =
+          currentItems.map((item) {
+            if ('${item.productId}_${item.size}_${item.color}' ==
+                event.productId) {
+              return CartItem(
+                productId: item.productId,
+                name: item.name,
+                price: item.price,
+                quantity: event.quantity,
+                size: item.size,
+                color: item.color,
+                imageUrl: item.imageUrl,
+              );
+            }
+            return item;
+          }).toList();
+      emit(CartLoading(cartItems: updatedItems));
       await cartRepository.updateCartQuantity(event.productId, event.quantity);
       add(LoadCart());
     } catch (e) {

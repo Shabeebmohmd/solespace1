@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 
@@ -90,4 +91,8 @@ void refresh(BuildContext context) {
   context.read<ProductBloc>().add(FetchProducts());
   context.read<BrandBloc>().add(FetchBrands());
   context.read<CategoryBloc>().add(FetchCategory());
+}
+
+void refreshCart(BuildContext context) {
+  context.read<CartBloc>().add(LoadCart());
 }

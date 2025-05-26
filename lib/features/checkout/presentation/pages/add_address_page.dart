@@ -2,9 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/core/utils/snack_bar_utils.dart';
-import 'package:sole_space_user1/core/utils/utils.dart';
-import 'package:sole_space_user1/core/utils/validate_utils.dart';
-import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_event.dart';
@@ -75,61 +72,6 @@ class AddAddressPage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  CustomTextField _phoneField(TextEditingController phoneNumberController) {
-    return CustomTextField(
-      controller: phoneNumberController,
-      keyboardType: TextInputType.phone,
-      label: 'Phone no',
-      validator: (value) => ValidationUtils.validateNumber(value, 'Phone no'),
-    );
-  }
-
-  CustomTextField _addressField(TextEditingController addressController) {
-    return CustomTextField(
-      controller: addressController,
-      maxLines: 3,
-      label: 'Address line',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Address line'),
-    );
-  }
-
-  CustomTextField _postalField(TextEditingController postalCodeController) {
-    return CustomTextField(
-      controller: postalCodeController,
-      keyboardType: TextInputType.number,
-      label: 'Postal code',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Postal code'),
-    );
-  }
-
-  CustomTextField _stateField(TextEditingController stateController) {
-    return CustomTextField(
-      controller: stateController,
-      label: 'State/Province',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'State/Province'),
-    );
-  }
-
-  CustomTextField _cityField(TextEditingController cityController) {
-    return CustomTextField(
-      controller: cityController,
-      label: 'City',
-      validator: (value) => ValidationUtils.validateRequired(value, 'City'),
-    );
-  }
-
-  CustomTextField _nameField(TextEditingController fullNameController) {
-    return CustomTextField(
-      controller: fullNameController,
-      label: 'Full name',
-      validator:
-          (value) => ValidationUtils.validateRequired(value, 'Full name'),
     );
   }
 }

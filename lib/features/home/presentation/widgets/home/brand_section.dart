@@ -48,7 +48,7 @@ class BrandSection extends StatelessWidget {
                         await Navigator.pushNamed(
                           context,
                           AppRouter.brandBasedProducts,
-                          arguments: brands.id,
+                          arguments: brands,
                         );
                         // ignore: use_build_context_synchronously
                         refresh(context);

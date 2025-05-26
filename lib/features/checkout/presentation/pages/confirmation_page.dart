@@ -15,13 +15,12 @@ class ConfirmationPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Lottie animation from assets
               Lottie.asset(
-                'assets/lottie/confirmation.json', // Path to your animation file
+                'assets/lottie/confirmation.json',
                 width: 200,
                 height: 200,
                 fit: BoxFit.contain,
-                repeat: false, // Set to true if you want the animation to loop
+                repeat: false,
               ),
               const SizedBox(height: 20),
               const Text(

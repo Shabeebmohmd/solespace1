@@ -14,9 +14,9 @@ import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
-import 'package:sole_space_user1/features/product%20related/pages/brand_based_product_list.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/brand_based_product_list.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
-import 'package:sole_space_user1/features/product%20related/pages/see_all_product.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/see_all_product.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
 

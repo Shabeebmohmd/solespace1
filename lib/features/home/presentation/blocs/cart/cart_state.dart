@@ -7,7 +7,14 @@ sealed class CartState extends Equatable {
   List<Object> get props => [];
 }
 
-final class CartLoading extends CartState {}
+class CartLoading extends CartState {
+  final List<CartItem> cartItems;
+
+  const CartLoading({this.cartItems = const []});
+
+  @override
+  List<Object> get props => [cartItems];
+}
 
 class CartLoaded extends CartState {
   final List<CartItem> cartItems;
