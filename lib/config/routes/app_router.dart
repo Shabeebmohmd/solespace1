@@ -9,6 +9,7 @@ import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_pa
 import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/category_based_product.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
@@ -38,6 +39,7 @@ class AppRouter {
   static const String productDetails = '/product-details';
   static const String seeAllProducts = '/see-all-products';
   static const String brandBasedProducts = '/brand-based-products';
+  static const String categoryBasedProducts = '/category-based-products';
 
   static const String checkOut = '/checkout';
   static const String address = '/address';
@@ -88,6 +90,11 @@ class AppRouter {
       case brandBasedProducts:
         return MaterialPageRoute(
           builder: (_) => BrandBasedProductListPage(),
+          settings: settings,
+        );
+      case categoryBasedProducts:
+        return MaterialPageRoute(
+          builder: (_) => CategoryBasedProductListPage(),
           settings: settings,
         );
       case seeAllProducts:

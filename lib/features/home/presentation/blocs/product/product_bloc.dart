@@ -13,6 +13,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ProductBloc({required this.productRepsitory}) : super(ProductInitial()) {
     on<FetchProducts>(_onFetchProduct);
     on<FetchProductsByBrand>(_onFetchProductsByBrand);
+    on<FetchProductsByCategory>(_onFetchProductsByCategory);
     on<ToggleFavorite>(_onToggleFavorite);
     on<SearchProduct>(_onSearchProducts);
     on<FilterProducts>(_onFilterProducts);
@@ -46,6 +47,27 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     try {
       final products = await productRepsitory.fetchProductsByBrand(
         event.brandId,
+      );
+      final prefs = await SharedPreferences.getInstance();
+      final favoriteIds = prefs.getStringList('favorite_product_ids') ?? [];
+      final favorites =
+          products
+              .where((product) => favoriteIds.contains(product.id))
+              .toList();
+      emit(ProductLoaded(data: products, favorites: favorites));
+    } catch (e) {
+      emit(ProductError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchProductsByCategory(
+    FetchProductsByCategory event,
+    Emitter<ProductState> emit,
+  ) async {
+    emit(ProductLoading());
+    try {
+      final products = await productRepsitory.fetchProductsByCategory(
+        event.categoryId,
       );
       final prefs = await SharedPreferences.getInstance();
       final favoriteIds = prefs.getStringList('favorite_product_ids') ?? [];

@@ -18,6 +18,15 @@ class FetchProductsByBrand extends ProductEvent {
   List<Object> get props => [brandId];
 }
 
+class FetchProductsByCategory extends ProductEvent {
+  final String categoryId;
+
+  const FetchProductsByCategory({required this.categoryId});
+
+  @override
+  List<Object> get props => [categoryId];
+}
+
 class ToggleFavorite extends ProductEvent {
   final Product product;
 

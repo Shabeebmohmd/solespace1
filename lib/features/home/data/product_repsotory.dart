@@ -36,4 +36,22 @@ class ProductRepsitory {
       throw Exception('Failed to fetch products for brand: $e');
     }
   }
+
+  Future<List<Product>> fetchProductsByCategory(String categoryId) async {
+    log('Fetching Products for Category ID: $categoryId');
+    try {
+      final querySnapshot =
+          await _firestore
+              .collection('products')
+              .where('categoryId', isEqualTo: categoryId)
+              .get();
+      final products =
+          querySnapshot.docs
+              .map((doc) => Product.fromFirestore(doc.data(), doc.id))
+              .toList();
+      return products;
+    } catch (e) {
+      throw Exception('Failed to fetch products for brand: $e');
+    }
+  }
 }
