@@ -14,7 +14,6 @@ import 'package:sole_space_user1/features/home/presentation/pages/product_detail
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/tabs/notification_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/brand_based_product_list.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/see_all_product.dart';
@@ -32,7 +31,6 @@ class AppRouter {
   static const String homeMain = '/home-Main';
   static const String cart = '/cart';
   static const String favorite = '/favorite';
-  static const String notification = '/notification';
   static const String profile = '/profile';
 
   //product related pages
@@ -78,8 +76,6 @@ class AppRouter {
         );
       case favorite:
         return MaterialPageRoute(builder: (_) => const FavoritePage());
-      case notification:
-        return MaterialPageRoute(builder: (_) => const NotificationPage());
       case profile:
         return MaterialPageRoute(builder: (_) => const ProfilePage());
       case productDetails:

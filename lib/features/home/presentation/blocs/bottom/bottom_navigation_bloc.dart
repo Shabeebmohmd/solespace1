@@ -6,13 +6,7 @@ part 'bottom_navigation_state.dart';
 
 class BottomNavigationBloc
     extends Bloc<BottomNavigationEvent, BottomNavigationState> {
-  BottomNavigationBloc()
-    : super(
-        BottomNavigationState(
-          selectedIndex: 2,
-          // pageController: PageController(initialPage: 2),
-        ),
-      ) {
+  BottomNavigationBloc() : super(BottomNavigationState(selectedIndex: 0)) {
     on<TabSelected>((event, emit) {
       emit(BottomNavigationState(selectedIndex: event.index));
     });

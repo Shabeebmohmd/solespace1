@@ -12,7 +12,7 @@ class HomeMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<BottomNavigationBloc>().add(TabSelected(index: 2));
+    context.read<BottomNavigationBloc>().add(TabSelected(index: 0));
     return BlocBuilder<BottomNavigationBloc, BottomNavigationState>(
       builder: (context, state) {
         return Scaffold(
@@ -32,10 +32,9 @@ class HomeMainPage extends StatelessWidget {
             index: state.selectedIndex,
             animationDuration: const Duration(milliseconds: 300),
             items: const [
+              Icon(Icons.home_outlined),
               Icon(Icons.shopping_bag_outlined),
               Icon(Icons.favorite_border),
-              Icon(Icons.home_outlined),
-              Icon(Icons.notifications_none_outlined),
               Icon(Icons.person_outline),
             ],
             onTap:
