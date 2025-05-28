@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
@@ -78,14 +77,6 @@ const SizedBox smallSpacing = SizedBox(height: 8);
 const SizedBox mediumSpacing = SizedBox(height: 16);
 const SizedBox extraMediumSpacing = SizedBox(height: 32);
 const SizedBox largeSpacing = SizedBox(height: 48);
-
-// const List<String> routes = [
-//   AppRouter.home,
-//   AppRouter.cart, // Index 0
-//   AppRouter.favorite, // Index 1
-//   // Index 2
-//   AppRouter.profile, // Index 4
-// ];
 
 void refresh(BuildContext context) {
   context.read<ProductBloc>().add(FetchProducts());

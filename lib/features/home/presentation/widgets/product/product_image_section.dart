@@ -1,11 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class ProductImageCarousel extends StatelessWidget {
+class ProductImageSection extends StatelessWidget {
   final List<String> imageUrls;
   final ValueNotifier<int> currentIndexNotifier;
 
-  const ProductImageCarousel({
+  const ProductImageSection({
     super.key,
     required this.imageUrls,
     required this.currentIndexNotifier,
