@@ -16,6 +16,26 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel> getUserData(String userId) async {
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      if (!doc.exists) {
+        throw Exception('User not found');
+      }
+      return UserModel.fromMap(doc.data()!);
+    } catch (e) {
+      throw Exception('Failed to get user data: $e');
+    }
+  }
+
+  Future<void> updateUserData(UserModel user) async {
+    try {
+      await _firestore.collection('users').doc(user.id).update(user.toMap());
+    } catch (e) {
+      throw Exception('Failed to update user data: $e');
+    }
+  }
+
   Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,

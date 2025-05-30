@@ -33,8 +33,7 @@ class CartRepository {
     if (user == null) throw Exception('User not logged in');
 
     // Create a unique ID for the cart item that includes size and color
-    final cartItemId =
-        '${cartItem.productId}_${cartItem.size}_${cartItem.color}';
+    final cartItemId = '${cartItem.productId}_${cartItem.size}';
 
     final cartRef = firestore
         .collection('users')

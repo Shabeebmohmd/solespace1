@@ -68,9 +68,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       final updatedItems =
           currentItems
               .where(
-                (item) =>
-                    '${item.productId}_${item.size}_${item.color}' !=
-                    event.productId,
+                (item) => '${item.productId}_${item.size}' != event.productId,
               )
               .toList();
       emit(CartLoading(cartItems: updatedItems));
@@ -92,15 +90,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
               : <CartItem>[];
       final updatedItems =
           currentItems.map((item) {
-            if ('${item.productId}_${item.size}_${item.color}' ==
-                event.productId) {
+            if ('${item.productId}_${item.size}' == event.productId) {
               return CartItem(
                 productId: item.productId,
                 name: item.name,
                 price: item.price,
                 quantity: event.quantity,
                 size: item.size,
-                color: item.color,
+                // color: item.color,
                 imageUrl: item.imageUrl,
               );
             }

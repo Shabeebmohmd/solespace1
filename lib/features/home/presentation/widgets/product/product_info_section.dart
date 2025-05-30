@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 
 class ProductInfoSection extends StatelessWidget {
@@ -15,7 +16,7 @@ class ProductInfoSection extends StatelessWidget {
           product.name,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
+        smallSpacing,
         Text(
           '\$${product.discountPrice?.toStringAsFixed(2) ?? product.price?.toStringAsFixed(2)}',
           style: const TextStyle(
@@ -24,7 +25,7 @@ class ProductInfoSection extends StatelessWidget {
             color: Colors.green,
           ),
         ),
-        const SizedBox(height: 16),
+        mediumSpacing,
         Text(product.description, style: const TextStyle(fontSize: 16)),
       ],
     );

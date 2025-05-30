@@ -173,13 +173,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
                 .toList();
       }
 
-      if (event.color != null && event.color!.isNotEmpty) {
-        filteredProducts =
-            filteredProducts
-                .where((product) => product.colors.contains(event.color))
-                .toList();
-      }
-
       if (event.size != null && event.size!.isNotEmpty) {
         filteredProducts =
             filteredProducts

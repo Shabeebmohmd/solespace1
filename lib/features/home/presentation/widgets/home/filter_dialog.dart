@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/features/home/models/brand_model.dart';
 import 'package:sole_space_user1/features/home/models/category_model.dart';
@@ -191,29 +192,29 @@ class _FilterDialogState extends State<FilterDialog> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              // Color Filter
-              const Text(
-                'Color',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children:
-                    ['Red', 'Blue', 'Black', 'White', 'Green'].map((color) {
-                      return ChoiceChip(
-                        label: Text(color),
-                        selected: selectedColor == color,
-                        onSelected: (selected) {
-                          setState(() {
-                            selectedColor = selected ? color : null;
-                          });
-                        },
-                      );
-                    }).toList(),
-              ),
-              const SizedBox(height: 16),
+              mediumSpacing,
+              // // Color Filter
+              // const Text(
+              //   'Color',
+              //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              // ),
+              // const SizedBox(height: 8),
+              // Wrap(
+              //   spacing: 8,
+              //   children:
+              //       ['Red', 'Blue', 'Black', 'White', 'Green'].map((color) {
+              //         return ChoiceChip(
+              //           label: Text(color),
+              //           selected: selectedColor == color,
+              //           onSelected: (selected) {
+              //             setState(() {
+              //               selectedColor = selected ? color : null;
+              //             });
+              //           },
+              //         );
+              //       }).toList(),
+              // ),
+              // const SizedBox(height: 16),
               // Size Filter
               const Text(
                 'Size',

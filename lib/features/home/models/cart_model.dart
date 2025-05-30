@@ -7,7 +7,7 @@ class CartItem extends Equatable {
   final double price;
   final int quantity;
   final String size;
-  final String color;
+  // final String color;
 
   const CartItem({
     required this.productId,
@@ -16,7 +16,7 @@ class CartItem extends Equatable {
     required this.price,
     required this.quantity,
     required this.size,
-    required this.color,
+    // required this.color,
   });
 
   // Convert Firestore document to CartItem
@@ -28,7 +28,7 @@ class CartItem extends Equatable {
       price: (data['price'] as num).toDouble(),
       quantity: data['quantity'] as int,
       size: data['size'] as String? ?? '',
-      color: data['color'] as String? ?? '',
+      // color: data['color'] as String? ?? '',
     );
   }
 
@@ -41,7 +41,7 @@ class CartItem extends Equatable {
       'price': price,
       'quantity': quantity,
       'size': size,
-      'color': color,
+      // 'color': color,
       'addedAt': DateTime.now(),
     };
   }
@@ -54,6 +54,6 @@ class CartItem extends Equatable {
     price,
     quantity,
     size,
-    color,
+    // color,
   ];
 }

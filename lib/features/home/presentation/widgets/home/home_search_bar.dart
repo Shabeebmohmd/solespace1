@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/widgets/home/filter_dialog.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/search_results_page.dart';
 
 class HomeSearchBar extends StatelessWidget {
   const HomeSearchBar({super.key});
@@ -11,9 +9,15 @@ class HomeSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TextField(
-        onChanged: (value) {
-          context.read<ProductBloc>().add(SearchProduct(query: value));
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SearchResultsPage(initialQuery: ''),
+            ),
+          );
         },
+        readOnly: true,
         style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           hintText: 'Looking for shoes',
@@ -21,9 +25,12 @@ class HomeSearchBar extends StatelessWidget {
           prefixIcon: const Icon(Icons.search, color: Colors.black),
           suffixIcon: IconButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const FilterDialog(),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => const SearchResultsPage(initialQuery: ''),
+                ),
               );
             },
             icon: const Icon(Icons.tune, color: Colors.black),

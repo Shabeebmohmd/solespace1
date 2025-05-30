@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_theme.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
@@ -18,6 +19,8 @@ import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/theme/theme_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/profile/profile_bloc.dart';
+import 'package:sole_space_user1/core/config/cloudinary_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,37 +45,51 @@ class MyApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) =>
-                AuthBloc(authRepository: context.read<AuthRepository>()),
+            create:
+                (context) =>
+                    AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
           BlocProvider(create: (context) => PasswordBloc()),
           BlocProvider(
-            create: (context) =>
-                BrandBloc(brandRepository: context.read<BrandRepository>())
-                  ..add(FetchBrands()),
+            create:
+                (context) =>
+                    BrandBloc(brandRepository: context.read<BrandRepository>())
+                      ..add(FetchBrands()),
           ),
           BlocProvider(
-            create: (context) => CategoryBloc(
-              categoryRepsitory: context.read<CategoryRepsitory>(),
-            )..add(FetchCategory()),
+            create:
+                (context) => CategoryBloc(
+                  categoryRepsitory: context.read<CategoryRepsitory>(),
+                )..add(FetchCategory()),
           ),
           BlocProvider(
-            create: (context) => ProductBloc(
-              productRepsitory: context.read<ProductRepsitory>(),
-            )..add(FetchProducts()),
+            create:
+                (context) => ProductBloc(
+                  productRepsitory: context.read<ProductRepsitory>(),
+                )..add(FetchProducts()),
           ),
           BlocProvider(create: (context) => BottomNavigationBloc()),
           BlocProvider(
-            create: (context) =>
-                CartBloc(cartRepository: context.read<CartRepository>())
-                  ..add(LoadCart()),
+            create:
+                (context) =>
+                    CartBloc(cartRepository: context.read<CartRepository>())
+                      ..add(LoadCart()),
           ),
           BlocProvider(
-            create: (context) => AddressBloc(
-              addressRepository: context.read<AddressRepository>(),
-            ),
+            create:
+                (context) => AddressBloc(
+                  addressRepository: context.read<AddressRepository>(),
+                ),
           ),
           BlocProvider(create: (context) => ThemeBloc()),
+          BlocProvider(
+            create:
+                (context) => ProfileBloc(
+                  authRepository: context.read<AuthRepository>(),
+                  cloudinary: CloudinaryConfig.cloudinary,
+                  imagePicker: ImagePicker(),
+                )..add(LoadProfile()),
+          ),
         ],
         child: BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {

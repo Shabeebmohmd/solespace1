@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/login_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/register_page.dart';
 import 'package:sole_space_user1/features/auth/presentation/pages/reset_password_page.dart';
@@ -9,14 +10,17 @@ import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_pa
 import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/category_based_product.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/product_details_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/category_based_product.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/product_details_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/profile/edit_profile_page.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/settings/settings.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/cart_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/favorite_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/home_main_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/brand_based_product_list.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/brand_based_product_list.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/product%20related/pages/see_all_product.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/product%20related/see_all_product.dart';
+import 'package:sole_space_user1/features/home/presentation/widgets/home/home_search_bar.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
 
@@ -27,6 +31,7 @@ class AppRouter {
   static const String register = '/register';
   static const String resetPassword = '/reset-password';
 
+  // home tabs
   static const String home = '/home';
   static const String homeMain = '/home-Main';
   static const String cart = '/cart';
@@ -38,12 +43,20 @@ class AppRouter {
   static const String seeAllProducts = '/see-all-products';
   static const String brandBasedProducts = '/brand-based-products';
   static const String categoryBasedProducts = '/category-based-products';
+  static const String searchProducts = '/search-products';
 
+  // checkout related pages
   static const String checkOut = '/checkout';
   static const String address = '/address';
   static const String addressList = '/address-list';
   static const String confirmation = '/confirmation';
   static const String editAddress = '/edit-address';
+
+  // user edit page
+  static const String editUser = '/edit-user';
+
+  // settings page
+  static const String settingsPage = '/settings-page';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -94,8 +107,14 @@ class AppRouter {
           settings: settings,
         );
       case seeAllProducts:
-        // final product = settings.arguments as Product;
         return MaterialPageRoute(builder: (_) => SeeAllProductPage());
+      case searchProducts:
+        return MaterialPageRoute(builder: (_) => HomeSearchBar());
+      case editUser:
+        final user = settings.arguments as UserModel;
+        return MaterialPageRoute(builder: (_) => EditProfilePage(user: user));
+      case settingsPage:
+        return MaterialPageRoute(builder: (_) => SettingsPage());
       default:
         return MaterialPageRoute(
           builder:

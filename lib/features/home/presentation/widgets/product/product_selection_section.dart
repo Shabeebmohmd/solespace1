@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product_detail/product_details_bloc.dart';
 
@@ -14,12 +15,12 @@ class ProductSelectionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle('Select Size'),
-        const SizedBox(height: 8),
+        smallSpacing,
         _buildSizeSelection(context),
-        const SizedBox(height: 24),
-        _buildSectionTitle('Select Color'),
-        const SizedBox(height: 8),
-        _buildColorSelection(context),
+        extraMediumSpacing,
+        // _buildSectionTitle('Select Color'),
+        // const SizedBox(height: 8),
+        // _buildColorSelection(context),
       ],
     );
   }
@@ -61,35 +62,35 @@ class ProductSelectionSection extends StatelessWidget {
     );
   }
 
-  Widget _buildColorSelection(BuildContext context) {
-    return BlocBuilder<ProductDetailsBloc, ProductDetailsState>(
-      builder: (context, state) {
-        return Wrap(
-          spacing: 8,
-          children:
-              product.colors.map((color) {
-                return ChoiceChip(
-                  label: Text(color),
-                  selected: state.selectedColor == color,
-                  selectedColor: Theme.of(context).colorScheme.secondary,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  visualDensity: VisualDensity.compact,
-                  labelStyle: const TextStyle(fontSize: 16),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  onSelected: (selected) {
-                    if (selected) {
-                      context.read<ProductDetailsBloc>().add(
-                        SelectColor(color),
-                      );
-                    }
-                  },
-                );
-              }).toList(),
-        );
-      },
-    );
-  }
+  // Widget _buildColorSelection(BuildContext context) {
+  //   return BlocBuilder<ProductDetailsBloc, ProductDetailsState>(
+  //     builder: (context, state) {
+  //       return Wrap(
+  //         spacing: 8,
+  //         children:
+  //             product.colors.map((color) {
+  //               return ChoiceChip(
+  //                 label: Text(color),
+  //                 selected: state.selectedColor == color,
+  //                 selectedColor: Theme.of(context).colorScheme.secondary,
+  //                 materialTapTargetSize: MaterialTapTargetSize.padded,
+  //                 visualDensity: VisualDensity.compact,
+  //                 labelStyle: const TextStyle(fontSize: 16),
+  //                 padding: const EdgeInsets.symmetric(
+  //                   horizontal: 16,
+  //                   vertical: 10,
+  //                 ),
+  //                 onSelected: (selected) {
+  //                   if (selected) {
+  //                     context.read<ProductDetailsBloc>().add(
+  //                       SelectColor(color),
+  //                     );
+  //                   }
+  //                 },
+  //               );
+  //             }).toList(),
+  //       );
+  //     },
+  //   );
+  // }
 }

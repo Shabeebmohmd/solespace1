@@ -9,7 +9,7 @@ class Product {
   int stockQuantity; // Available stock
   List<String> imageUrls; // List of image URLs from Cloudinary
   List<String> sizes; // Available sizes (e.g., ["7", "8", "9"])
-  List<String> colors;
+  // List<String> colors;
 
   Product({
     this.id,
@@ -22,7 +22,7 @@ class Product {
     required this.stockQuantity,
     required this.imageUrls,
     required this.sizes,
-    required this.colors,
+    // required this.colors,
   });
 
   Product copyWith({
@@ -36,7 +36,7 @@ class Product {
     int? stockQuantity,
     List<String>? imageUrls,
     List<String>? sizes,
-    List<String>? colors,
+    // List<String>? colors,
   }) {
     return Product(
       id: id ?? this.id,
@@ -49,30 +49,42 @@ class Product {
       stockQuantity: stockQuantity ?? this.stockQuantity,
       imageUrls: imageUrls ?? this.imageUrls,
       sizes: sizes ?? this.sizes,
-      colors: colors ?? this.colors,
     );
   }
 
-  factory Product.fromFirestore(Map<String, dynamic> json, String id) =>
-      Product(
-        id: id,
-        name: json['name'] ?? '',
-        description: json['description'] ?? '',
-        brandId: json['brandId'] ?? '',
-        categoryId: json['categoryId'] ?? '',
-        price:
-            (json['price'] is String)
-                ? double.tryParse(json['price'])
-                : json['price']?.toDouble(),
-        discountPrice:
-            (json['discountPrice'] is String)
-                ? double.tryParse(json['discountPrice'])
-                : json['discountPrice'].toDouble(),
-        stockQuantity: json['stockQuantity'] ?? '',
-        imageUrls: List<String>.from(json['imageUrls']),
-        sizes: List<String>.from(json['sizes']),
-        colors: List<String>.from(json['colors']),
-      );
+  factory Product.fromFirestore(Map<String, dynamic> json, String id) {
+    // Safely parse price
+    double? parsePrice(dynamic value) {
+      if (value == null) return null;
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value);
+      return null;
+    }
+
+    // Safely parse lists
+    List<String> parseList(dynamic value) {
+      if (value == null) return [];
+      if (value is List) {
+        return value.map((e) => e?.toString() ?? '').toList();
+      }
+      return [];
+    }
+
+    return Product(
+      id: id,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      brandId: json['brandId']?.toString() ?? '',
+      categoryId: json['categoryId']?.toString() ?? '',
+      price: parsePrice(json['price']),
+      discountPrice: parsePrice(json['discountPrice']),
+      stockQuantity: json['stockQuantity'] is int ? json['stockQuantity'] : 0,
+      imageUrls: parseList(json['imageUrls']),
+      sizes: parseList(json['sizes']),
+      // colors: parseList(json['colors']),
+    );
+  }
 }
 
 

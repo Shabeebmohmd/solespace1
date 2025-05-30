@@ -30,7 +30,7 @@ class CartListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Price: \$${item.price.toStringAsFixed(2)}'),
-          Text('Size: ${item.size}, Color: ${item.color}'),
+          Text('Size: ${item.size}'),
         ],
       ),
       trailing: Row(
@@ -42,15 +42,13 @@ class CartListItem extends StatelessWidget {
               if (item.quantity > 1) {
                 context.read<CartBloc>().add(
                   UpdateCartQuantity(
-                    '${item.productId}_${item.size}_${item.color}',
+                    '${item.productId}_${item.size}',
                     item.quantity - 1,
                   ),
                 );
               } else {
                 context.read<CartBloc>().add(
-                  RemoveFromCart(
-                    '${item.productId}_${item.size}_${item.color}',
-                  ),
+                  RemoveFromCart('${item.productId}_${item.size}'),
                 );
               }
             },
@@ -64,7 +62,7 @@ class CartListItem extends StatelessWidget {
             onPressed: () {
               context.read<CartBloc>().add(
                 UpdateCartQuantity(
-                  '${item.productId}_${item.size}_${item.color}',
+                  '${item.productId}_${item.size}',
                   item.quantity + 1,
                 ),
               );
@@ -74,7 +72,7 @@ class CartListItem extends StatelessWidget {
             icon: const Icon(Icons.delete),
             onPressed: () {
               context.read<CartBloc>().add(
-                RemoveFromCart('${item.productId}_${item.size}_${item.color}'),
+                RemoveFromCart('${item.productId}_${item.size}'),
               );
             },
           ),

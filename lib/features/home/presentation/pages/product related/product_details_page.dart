@@ -59,8 +59,7 @@ class ProductDetailsPage extends StatelessWidget {
           builder: (context, cartState) {
             return CustomButton(
               onPressed: () {
-                if (productDetailsState.selectedSize != null &&
-                    productDetailsState.selectedColor != null) {
+                if (productDetailsState.selectedSize != null) {
                   final cartItem = CartItem(
                     productId: product.id!,
                     imageUrl: product.imageUrls.first,
@@ -68,7 +67,6 @@ class ProductDetailsPage extends StatelessWidget {
                     price: product.discountPrice ?? product.price!,
                     quantity: productDetailsState.quantity,
                     size: productDetailsState.selectedSize!,
-                    color: productDetailsState.selectedColor!,
                   );
                   context.read<CartBloc>().add(AddToCart(cartItem));
                   ScaffoldMessenger.of(context).showSnackBar(

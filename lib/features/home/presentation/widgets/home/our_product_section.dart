@@ -5,8 +5,8 @@ import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 
-class NewArrivalsSection extends StatelessWidget {
-  const NewArrivalsSection({super.key});
+class OurProductsSection extends StatelessWidget {
+  const OurProductsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class NewArrivalsSection extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'New Arrivals',
+                      'Our products',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
