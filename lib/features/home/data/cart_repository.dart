@@ -78,4 +78,26 @@ class CartRepository {
         .doc(cartItemId)
         .update({'quantity': quantity});
   }
+
+  Future<void> clearCart() async {
+    log('clearing cart');
+    final user = auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
+
+    // Get all cart items
+    final cartItems =
+        await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('cart')
+            .get();
+
+    // Delete each item in a batch
+    final batch = firestore.batch();
+    for (var doc in cartItems.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
+  }
 }

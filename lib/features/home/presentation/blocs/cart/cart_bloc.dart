@@ -13,6 +13,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<AddToCart>(_onAddToCart);
     on<RemoveFromCart>(_onRemoveFromCart);
     on<UpdateCartQuantity>(_onUpdateCartQuantity);
+    on<ClearCart>(_onClearCart);
   }
   double calculateTotal(List<CartItem> cartItems, double shipping) {
     return cartItems.fold(
@@ -108,6 +109,20 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       add(LoadCart());
     } catch (e) {
       emit(CartError('Failed to update cart: $e'));
+    }
+  }
+
+  Future<void> _onClearCart(ClearCart event, Emitter<CartState> emit) async {
+    try {
+      final currentItems =
+          state is CartLoading
+              ? (state as CartLoading).cartItems
+              : <CartItem>[];
+      emit(CartLoading(cartItems: currentItems));
+      await cartRepository.clearCart();
+      emit(const CartLoaded([]));
+    } catch (e) {
+      emit(CartError('Failed to clear cart: $e'));
     }
   }
 }

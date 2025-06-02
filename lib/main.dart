@@ -21,9 +21,17 @@ import 'package:sole_space_user1/features/home/presentation/blocs/product/produc
 import 'package:sole_space_user1/features/home/presentation/blocs/theme/theme_bloc.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/profile/profile_bloc.dart';
 import 'package:sole_space_user1/core/config/cloudinary_config.dart';
+import 'package:sole_space_user1/features/checkout/data/services/payment_service.dart';
+import 'package:sole_space_user1/core/constants/stripe_constants.dart';
+import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Stripe
+  final paymentService = PaymentService();
+  await paymentService.initializeStripe(StripeConstants.publishableKey);
+
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -90,6 +98,7 @@ class MyApp extends StatelessWidget {
                   imagePicker: ImagePicker(),
                 )..add(LoadProfile()),
           ),
+          BlocProvider(create: (context) => PaymentBloc(PaymentService())),
         ],
         child: BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {

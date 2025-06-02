@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
+import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_bloc.dart';
+import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_state.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_card.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/checkout_summary.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/order_item_list.dart';
@@ -99,22 +102,103 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  void _handlePlaceOrder(BuildContext context) {
-    final addressState = context.read<AddressBloc>().state;
-    final cartState = context.read<CartBloc>().state;
+  Future<void> _handlePlaceOrder(BuildContext context) async {
+    try {
+      final addressState = context.read<AddressBloc>().state;
+      final cartState = context.read<CartBloc>().state;
 
-    if (addressState is AddressLoaded &&
-        addressState.addresses.isNotEmpty &&
-        cartState is CartLoaded &&
-        cartState.cartItems.isNotEmpty) {
-      Navigator.pushReplacementNamed(context, AppRouter.confirmation);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please select an address and make sure your cart is not empty.',
+      if (addressState is! AddressLoaded || addressState.addresses.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a delivery address')),
+        );
+        return;
+      }
+
+      if (cartState is! CartLoaded || cartState.cartItems.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Your cart is empty')));
+        return;
+      }
+
+      // Get selected address
+      final selectedAddress = addressState.addresses.firstWhere(
+        (address) => address.isSelected,
+        orElse: () => addressState.addresses.first,
+      );
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      // Process payment
+      final paymentBloc = context.read<PaymentBloc>();
+      final total = cartState.cartItems.fold(
+        0.0,
+        (sum, item) => sum + (item.price * item.quantity),
+      );
+
+      paymentBloc.add(
+        ProcessPayment(
+          amount: total,
+          currency: 'usd',
+          billingDetails: BillingDetails(
+            name: selectedAddress.fullName,
+            address: Address(
+              city: selectedAddress.city,
+              country: 'US',
+              line1: selectedAddress.address,
+              line2: '',
+              postalCode: selectedAddress.postalCode,
+              state: selectedAddress.state,
+            ),
+            phone: selectedAddress.phoneNumber,
           ),
         ),
+      );
+
+      // Listen to payment state changes
+      await for (final state in paymentBloc.stream) {
+        if (state is PaymentSuccess) {
+          // Hide loading indicator
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+
+          // Clear cart
+          context.read<CartBloc>().add(ClearCart());
+
+          // Show success message
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Payment successful!')));
+
+          // Navigate to success page or home
+          Navigator.pushReplacementNamed(context, AppRouter.confirmation);
+          break;
+        } else if (state is PaymentError) {
+          // Hide loading indicator
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Payment failed: ${state.message}')),
+          );
+          break;
+        }
+      }
+    } catch (e) {
+      // Hide loading indicator if showing
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment failed: ${e.toString()}')),
       );
     }
   }

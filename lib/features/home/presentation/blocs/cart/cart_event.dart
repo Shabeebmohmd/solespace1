@@ -36,3 +36,7 @@ class UpdateCartQuantity extends CartEvent {
 }
 
 class LoadCart extends CartEvent {}
+
+class ClearCart extends CartEvent {
+  const ClearCart();
+}

@@ -20,21 +20,6 @@ class HomePage extends StatelessWidget {
         appBar: CustomAppBar(
           title: const Text('SoleSpace'),
           showBackButton: false,
-          // leading: BlocBuilder<ThemeBloc, ThemeState>(
-          //   builder: (context, state) {
-          //     final isDarkMode =
-          //         state is ThemeInitial && state.themeMode == ThemeMode.dark;
-          //     return IconButton(
-          //       icon: Icon(
-          //         isDarkMode ? Icons.dark_mode : Icons.light_mode,
-          //         color: isDarkMode ? Colors.white : Colors.yellow,
-          //       ),
-          //       onPressed: () {
-          //         context.read<ThemeBloc>().add(ToggleTheme(!isDarkMode));
-          //       },
-          //     );
-          //   },
-          // ),
           actions: [
             IconButton(
               icon: Icon(
