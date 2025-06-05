@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
@@ -7,6 +8,7 @@ import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_stat
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
+  StreamSubscription<User?>? _authStateSubscription;
 
   AuthBloc({required this.authRepository}) : super(AuthInitial()) {
     on<SignInWithEmailAndPassword>(_onSignInWithEmailAndPassword);
@@ -15,9 +17,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResetPassword>(_onResetPassword);
     on<SignOut>(_onSignOut);
     on<CheckAuthStatus>(_onCheckAuthStatus);
+    on<AuthStateChanged>(_onAuthStateChanged);
 
-    // Check initial auth state
-    // add(CheckAuthStatus());
+    _initializeAuthStateListener();
+  }
+
+  void _initializeAuthStateListener() {
+    _authStateSubscription = FirebaseAuth.instance.authStateChanges().listen(
+      (User? user) {
+        add(AuthStateChanged(user: user));
+      },
+      onError: (error) {
+        add(CheckAuthStatus());
+      },
+    );
+  }
+
+  Future<void> _onAuthStateChanged(
+    AuthStateChanged event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      if (event.user != null) {
+        add(CheckAuthStatus());
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      emit(Unauthenticated());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _authStateSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onSignInWithEmailAndPassword(
@@ -30,9 +64,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
-      emit(Authenticated(uid: userCredential.user!.uid));
+      if (userCredential.user != null) {
+        emit(Authenticated(uid: userCredential.user!.uid));
+      } else {
+        emit(Unauthenticated());
+      }
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -54,7 +92,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.addUserToFirestore(user);
       emit(Authenticated(uid: userCredential.user!.uid));
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -64,10 +102,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
+      // First ensure we're signed out
+      // await authRepository.signOut();
+
       final userCredential = await authRepository.signInWithGoogle();
-      emit(Authenticated(uid: userCredential.user!.uid));
+      if (userCredential.user != null) {
+        // Create or update user data in Firestore
+        final user = UserModel(
+          id: userCredential.user!.uid,
+          email: userCredential.user!.email ?? '',
+          name: userCredential.user!.displayName ?? 'User',
+          profileImageUrl: userCredential.user!.photoURL,
+        );
+        await authRepository.addUserToFirestore(user);
+        emit(Authenticated(uid: userCredential.user!.uid));
+      } else {
+        emit(Unauthenticated());
+      }
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -80,7 +133,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.resetPassword(event.email);
       emit(Unauthenticated());
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -90,7 +143,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.signOut();
       emit(Unauthenticated());
     } catch (e) {
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 
@@ -99,19 +152,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      print('Checking auth status...');
       final user = FirebaseAuth.instance.currentUser;
-      print('Current user: ${user?.uid}');
-
       if (user != null) {
-        emit(Authenticated(uid: user.uid));
+        try {
+          await user.getIdToken(true);
+          emit(Authenticated(uid: user.uid));
+        } catch (e) {
+          await authRepository.signOut();
+          emit(Unauthenticated());
+        }
       } else {
-        print('No user found, emitting Unauthenticated');
         emit(Unauthenticated());
       }
     } catch (e) {
-      print('Error in _onCheckAuthStatus: $e');
-      emit(AuthError(message: e.toString()));
+      emit(Unauthenticated());
     }
   }
 }

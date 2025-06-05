@@ -4,15 +4,28 @@ import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
+import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/profile/profile_bloc.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    context.read<ProfileBloc>().add(LoadProfile());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: const Text('Profile')),
+      appBar: CustomAppBar(title: const Text('Profile'), showBackButton: false),
       body: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {
@@ -32,6 +45,7 @@ class ProfilePage extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildProfileSection(context, user),
@@ -68,6 +82,15 @@ class ProfilePage extends StatelessWidget {
               Icons.receipt,
               () => Navigator.pushNamed(context, AppRouter.orderPage),
             ),
+            Divider(),
+            _buildSettingsItem(context, 'Log out', Icons.logout_outlined, () {
+              showCustomAlertDialog(
+                context: context,
+                title: 'Log out',
+                content: 'Are you sure you want to log out?',
+                onConfirm: () => context.read<AuthBloc>().add(SignOut()),
+              );
+            }),
           ]),
         ],
       ),
@@ -148,6 +171,7 @@ class ProfilePage extends StatelessWidget {
         Text(
           user.email,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            // ignore: deprecated_member_use
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
           ),
         ),

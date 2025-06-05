@@ -13,7 +13,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthRepository authRepository;
   final CloudinaryPublic cloudinary;
   final ImagePicker imagePicker;
-  final user = FirebaseAuth.instance.currentUser;
+  User? get user => FirebaseAuth.instance.currentUser;
 
   ProfileBloc({
     required this.authRepository,
@@ -31,10 +31,28 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     emit(ProfileLoading());
     try {
-      final userDoc = await authRepository.getUserData(user!.uid);
-      emit(ProfileLoaded(userDoc));
+      if (user == null) {
+        emit(ProfileInitial());
+        return;
+      }
+
+      try {
+        final userDoc = await authRepository.getUserData(user!.uid);
+        emit(ProfileLoaded(userDoc));
+      } catch (e) {
+        // Silently create user data if it doesn't exist
+        final newUser = UserModel(
+          id: user!.uid,
+          email: user!.email ?? '',
+          name: user!.displayName ?? 'User',
+          profileImageUrl: user!.photoURL,
+        );
+        await authRepository.addUserToFirestore(newUser);
+        emit(ProfileLoaded(newUser));
+      }
     } catch (e) {
-      emit(ProfileError(message: e.toString()));
+      // Silently handle any errors and return to initial state
+      emit(ProfileInitial());
     }
   }
 
@@ -44,6 +62,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     if (state is! ProfileLoaded) {
       emit(ProfileError(message: 'Profile not loaded'));
+      return;
+    }
+
+    if (user == null) {
+      emit(ProfileError(message: 'No user is currently signed in'));
       return;
     }
 
@@ -86,6 +109,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     if (state is! ProfileLoaded) {
       emit(ProfileError(message: 'Profile not loaded'));
+      return;
+    }
+
+    if (user == null) {
+      emit(ProfileError(message: 'No user is currently signed in'));
       return;
     }
 

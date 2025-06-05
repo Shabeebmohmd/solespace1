@@ -22,7 +22,11 @@ class AuthRepository {
       if (!doc.exists) {
         throw Exception('User not found');
       }
-      return UserModel.fromMap(doc.data()!);
+      final data = doc.data();
+      if (data == null) {
+        throw Exception('User data is null');
+      }
+      return UserModel.fromMap(data);
     } catch (e) {
       throw Exception('Failed to get user data: $e');
     }
@@ -66,6 +70,9 @@ class AuthRepository {
 
   Future<UserCredential> signInWithGoogle() async {
     try {
+      // First sign out from Google to ensure clean state
+      // await _googleSignIn.signOut();
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) throw Exception('Google sign in aborted');
 
@@ -75,6 +82,9 @@ class AuthRepository {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+
+      // Sign out from Firebase before signing in with new credentials
+      await _auth.signOut();
 
       return await _auth.signInWithCredential(credential);
     } catch (e) {
@@ -92,7 +102,11 @@ class AuthRepository {
 
   Future<void> signOut() async {
     try {
+      // Sign out from both Firebase and Google
       await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
+
+      // Clear any cached data
+      await _googleSignIn.disconnect();
     } catch (e) {
       throw _handleAuthException(e);
     }
@@ -113,10 +127,28 @@ class AuthRepository {
           return Exception('Password is too weak.');
         case 'operation-not-allowed':
           return Exception('Operation not allowed.');
+        case 'network-request-failed':
+          return Exception(
+            'Network error. Please check your internet connection.',
+          );
+        case 'too-many-requests':
+          return Exception('Too many attempts. Please try again later.');
+        case 'user-disabled':
+          return Exception('This account has been disabled.');
+        case 'invalid-verification-code':
+          return Exception('Invalid verification code.');
+        case 'invalid-verification-id':
+          return Exception('Invalid verification ID.');
+        case 'session-expired':
+          return Exception('Session expired. Please sign in again.');
         default:
           return Exception('Authentication failed: ${e.message}');
       }
+    } else if (e is FirebaseException) {
+      return Exception('Firebase error: ${e.message}');
+    } else if (e is Exception) {
+      return e;
     }
-    return Exception('An unexpected error occurred.');
+    return Exception('An unexpected error occurred: ${e.toString()}');
   }
 }

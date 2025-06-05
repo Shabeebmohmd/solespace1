@@ -4,10 +4,22 @@ import 'package:intl/intl.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/home/models/order_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/order/order_state.dart';
 
-class OrdersPage extends StatelessWidget {
+class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
+
+  @override
+  State<OrdersPage> createState() => _OrdersPageState();
+}
+
+class _OrdersPageState extends State<OrdersPage> {
+  @override
+  void initState() {
+    context.read<OrderBloc>().add(LoadOrders());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +72,7 @@ class _OrderCard extends StatelessWidget {
                   'Order #${order.id.substring(0, 8)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                _buildStatusChip(order.status),
+                // _buildStatusChip(order.status),
               ],
             ),
             const SizedBox(height: 8),
