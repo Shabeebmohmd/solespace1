@@ -61,6 +61,13 @@ class ProfilePage extends StatelessWidget {
               Icons.settings_outlined,
               () => Navigator.pushNamed(context, AppRouter.settingsPage),
             ),
+            Divider(),
+            _buildSettingsItem(
+              context,
+              'Orders',
+              Icons.receipt,
+              () => Navigator.pushNamed(context, AppRouter.orderPage),
+            ),
           ]),
         ],
       ),

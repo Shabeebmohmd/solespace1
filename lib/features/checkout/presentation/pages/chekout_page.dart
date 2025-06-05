@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
+import 'package:sole_space_user1/features/checkout/data/model/address_model.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_bloc.dart';
@@ -10,7 +11,11 @@ import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/pa
 import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_card.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/checkout_summary.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/order_item_list.dart';
+import 'package:sole_space_user1/features/home/models/order_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CheckoutPage extends StatelessWidget {
   final double shipping = 49;
@@ -106,6 +111,14 @@ class CheckoutPage extends StatelessWidget {
     try {
       final addressState = context.read<AddressBloc>().state;
       final cartState = context.read<CartBloc>().state;
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to place an order')),
+        );
+        return;
+      }
 
       if (addressState is! AddressLoaded || addressState.addresses.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -163,18 +176,40 @@ class CheckoutPage extends StatelessWidget {
       // Listen to payment state changes
       await for (final state in paymentBloc.stream) {
         if (state is PaymentSuccess) {
+          // Create order
+          final order = Order(
+            id: '', // Will be set by Firestore
+            userId: user.uid,
+            items: cartState.cartItems,
+            total: total,
+            status: 'pending',
+            createdAt: DateTime.now(),
+            paymentIntentId:
+                '', // You might want to store this from the payment response
+            addressId: selectedAddress.id,
+            fullName: selectedAddress.fullName,
+            address: selectedAddress.address,
+            city: selectedAddress.city,
+            state: selectedAddress.state,
+            postalCode: selectedAddress.postalCode,
+            phoneNumber: selectedAddress.phoneNumber,
+          );
+
+          // Create order in Firestore
+          context.read<OrderBloc>().add(CreateOrder(order));
+
+          // Clear cart
+          context.read<CartBloc>().add(ClearCart());
+
           // Hide loading indicator
           if (Navigator.canPop(context)) {
             Navigator.pop(context);
           }
 
-          // Clear cart
-          context.read<CartBloc>().add(ClearCart());
-
           // Show success message
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Payment successful!')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Order placed successfully!')),
+          );
 
           // Navigate to success page or home
           Navigator.pushReplacementNamed(context, AppRouter.confirmation);

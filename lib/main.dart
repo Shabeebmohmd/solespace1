@@ -24,6 +24,9 @@ import 'package:sole_space_user1/core/config/cloudinary_config.dart';
 import 'package:sole_space_user1/features/checkout/data/services/payment_service.dart';
 import 'package:sole_space_user1/core/constants/stripe_constants.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_bloc.dart';
+import 'package:sole_space_user1/features/home/data/order_repository.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +52,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => ProductRepsitory()),
         RepositoryProvider(create: (context) => AddressRepository()),
         RepositoryProvider(create: (context) => CartRepository()),
+        RepositoryProvider(create: (context) => OrderRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -99,6 +103,12 @@ class MyApp extends StatelessWidget {
                 )..add(LoadProfile()),
           ),
           BlocProvider(create: (context) => PaymentBloc(PaymentService())),
+          BlocProvider(
+            create:
+                (context) =>
+                    OrderBloc(context.read<OrderRepository>())
+                      ..add(LoadOrders()),
+          ),
         ],
         child: BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {

@@ -10,6 +10,7 @@ import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_pa
 import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
+import 'package:sole_space_user1/features/home/presentation/pages/orders/orders_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/category_based_product.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/profile/edit_profile_page.dart';
@@ -57,6 +58,7 @@ class AppRouter {
 
   // settings page
   static const String settingsPage = '/settings-page';
+  static const String orderPage = '/order-page';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -115,6 +117,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => EditProfilePage(user: user));
       case settingsPage:
         return MaterialPageRoute(builder: (_) => SettingsPage());
+      case orderPage:
+        return MaterialPageRoute(builder: (_) => OrdersPage());
       default:
         return MaterialPageRoute(
           builder:
