@@ -9,7 +9,7 @@ class BrandCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 150,
+      width: MediaQuery.sizeOf(context).height * 0.18,
       child: Card(
         elevation: 2,
         child: Column(

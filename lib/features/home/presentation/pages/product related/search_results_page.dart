@@ -47,7 +47,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            isSearching ? 'No products found for' : 'Start searching for shoes',
+            isSearching ? 'No products found ' : 'Start searching for shoes',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),

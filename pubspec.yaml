@@ -58,7 +58,7 @@ dependencies:
   carousel_slider:
   lottie:
   # Authentication
-  google_sign_in: ^6.1.6
+  google_sign_in:
 
   # Utils
   intl:

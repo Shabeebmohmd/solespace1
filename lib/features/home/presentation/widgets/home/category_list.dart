@@ -17,7 +17,7 @@ class CategoryList extends StatelessWidget {
           return ShimmerLoaders.categoryLoader();
         } else if (state is CategoryLoaded) {
           return Container(
-            height: 60,
+            height: MediaQuery.sizeOf(context).height * 0.08,
             margin: const EdgeInsets.symmetric(vertical: 16),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

@@ -37,10 +37,11 @@ class BrandSection extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 150,
+                height: MediaQuery.sizeOf(context).height * 0.20,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: state.data.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemBuilder: (context, index) {
                     final brands = state.data[index];
                     return InkWell(

@@ -41,20 +41,24 @@ class OurProductsSection extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.75,
+                child: SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.25,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: state.data.length,
+                    itemBuilder: (context, index) {
+                      final product = state.data[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: SizedBox(
+                          width:
+                              MediaQuery.of(context).size.width *
+                              0.4, // Responsive width for each item
+                          child: ProductCard(product: product),
+                        ),
+                      );
+                    },
                   ),
-                  itemCount: state.data.length,
-                  itemBuilder: (context, index) {
-                    final product = state.data[index];
-                    return ProductCard(product: product);
-                  },
                 ),
               ),
             ],

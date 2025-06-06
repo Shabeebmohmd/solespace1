@@ -72,7 +72,7 @@ class _OrderCard extends StatelessWidget {
                   'Order #${order.id.substring(0, 8)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                // _buildStatusChip(order.status),
+                _buildStatusChip(order.status),
               ],
             ),
             const SizedBox(height: 8),

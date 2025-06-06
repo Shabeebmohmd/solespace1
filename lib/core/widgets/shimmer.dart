@@ -15,7 +15,7 @@ class ShimmerLoaders {
                 'Popular Brands',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Text('See all'),
+              // Text('See all'),
             ],
           ),
         ),
@@ -94,26 +94,26 @@ class ShimmerLoaders {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
             itemCount: itemCount,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.75,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             itemBuilder: (context, index) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
               );

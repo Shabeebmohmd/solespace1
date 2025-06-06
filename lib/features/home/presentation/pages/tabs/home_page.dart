@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/dismissible_keyboard.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
-import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/home/presentation/widgets/home/brand_section.dart';
 import 'package:sole_space_user1/features/home/presentation/widgets/home/category_list.dart';
 import 'package:sole_space_user1/features/home/presentation/widgets/home/home_search_bar.dart';
@@ -20,22 +17,22 @@ class HomePage extends StatelessWidget {
         appBar: CustomAppBar(
           title: const Text('SoleSpace'),
           showBackButton: false,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onPressed: () {
-                showCustomAlertDialog(
-                  context: context,
-                  title: 'Log out',
-                  content: 'Are you sure you want to log out?',
-                  onConfirm: () => context.read<AuthBloc>().add(SignOut()),
-                );
-              },
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: Icon(
+          //       Icons.logout,
+          //       color: Theme.of(context).colorScheme.onSurface,
+          //     ),
+          //     onPressed: () {
+          //       showCustomAlertDialog(
+          //         context: context,
+          //         title: 'Log out',
+          //         content: 'Are you sure you want to log out?',
+          //         onConfirm: () => context.read<AuthBloc>().add(SignOut()),
+          //       );
+          //     },
+          //   ),
+          // ],
         ),
         body: SafeArea(
           child: Column(
@@ -50,7 +47,8 @@ class HomePage extends StatelessWidget {
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: const [
                         CategoryList(),
                         BrandSection(),
