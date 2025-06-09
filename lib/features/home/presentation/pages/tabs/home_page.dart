@@ -17,22 +17,6 @@ class HomePage extends StatelessWidget {
         appBar: CustomAppBar(
           title: const Text('SoleSpace'),
           showBackButton: false,
-          // actions: [
-          //   IconButton(
-          //     icon: Icon(
-          //       Icons.logout,
-          //       color: Theme.of(context).colorScheme.onSurface,
-          //     ),
-          //     onPressed: () {
-          //       showCustomAlertDialog(
-          //         context: context,
-          //         title: 'Log out',
-          //         content: 'Are you sure you want to log out?',
-          //         onConfirm: () => context.read<AuthBloc>().add(SignOut()),
-          //       );
-          //     },
-          //   ),
-          // ],
         ),
         body: SafeArea(
           child: Column(

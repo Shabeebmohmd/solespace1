@@ -192,6 +192,7 @@ class CheckoutPage extends StatelessWidget {
             state: selectedAddress.state,
             postalCode: selectedAddress.postalCode,
             phoneNumber: selectedAddress.phoneNumber,
+            trackingNumber: '',
           );
 
           // Create order in Firestore

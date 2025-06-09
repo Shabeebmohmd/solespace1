@@ -133,6 +133,25 @@ class _OrderCard extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 8),
+            if (order.trackingNumber != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Tracking ID: ${order.trackingNumber}'),
+
+                  order.status != 'Cancelled' && order.status != 'Delivered'
+                      ? TextButton(
+                        onPressed: () {
+                          // Add your cancel order function here
+                        },
+                        child: const Text('Cancel'),
+                      )
+                      : const SizedBox.shrink(),
+                ],
+              )
+            else
+              SizedBox.shrink(),
           ],
         ),
       ),

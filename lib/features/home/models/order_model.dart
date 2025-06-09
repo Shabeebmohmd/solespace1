@@ -17,6 +17,7 @@ class Order extends Equatable {
   final String state;
   final String postalCode;
   final String phoneNumber;
+  final String? trackingNumber;
 
   const Order({
     required this.id,
@@ -33,6 +34,7 @@ class Order extends Equatable {
     required this.state,
     required this.postalCode,
     required this.phoneNumber,
+    this.trackingNumber,
   });
 
   factory Order.fromFirestore(Map<String, dynamic> data, String id) {
@@ -56,6 +58,7 @@ class Order extends Equatable {
       state: data['state'] as String,
       postalCode: data['postalCode'] as String,
       phoneNumber: data['phoneNumber'] as String,
+      trackingNumber: data['trackingNumber'] ?? '',
     );
   }
 
@@ -74,6 +77,7 @@ class Order extends Equatable {
       'state': state,
       'postalCode': postalCode,
       'phoneNumber': phoneNumber,
+      'trackingNumber': trackingNumber,
     };
   }
 
@@ -93,5 +97,6 @@ class Order extends Equatable {
     state,
     postalCode,
     phoneNumber,
+    trackingNumber,
   ];
 }
