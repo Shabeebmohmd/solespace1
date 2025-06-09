@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:sole_space_user1/features/home/models/order_model.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
 
 abstract class OrderEvent extends Equatable {
   const OrderEvent();
@@ -27,4 +27,13 @@ class UpdateOrderStatus extends OrderEvent {
 
   @override
   List<Object?> get props => [orderId, status];
+}
+
+class FilterOrders extends OrderEvent {
+  final String filter;
+
+  const FilterOrders(this.filter);
+
+  @override
+  List<Object?> get props => [filter];
 }

@@ -11,7 +11,13 @@ class PaymentInitial extends PaymentState {}
 
 class PaymentLoading extends PaymentState {}
 
-class PaymentSuccess extends PaymentState {}
+class PaymentSuccess extends PaymentState {
+  final String paymentIntentId;
+  const PaymentSuccess(this.paymentIntentId);
+
+  @override
+  List<Object?> get props => [paymentIntentId];
+}
 
 class PaymentError extends PaymentState {
   final String message;

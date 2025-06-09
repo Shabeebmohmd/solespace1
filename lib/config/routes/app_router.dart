@@ -10,7 +10,6 @@ import 'package:sole_space_user1/features/checkout/presentation/pages/chekout_pa
 import 'package:sole_space_user1/features/checkout/presentation/pages/confirmation_page.dart';
 import 'package:sole_space_user1/features/checkout/presentation/pages/edit_address_page.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
-import 'package:sole_space_user1/features/home/presentation/pages/orders/orders_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/category_based_product.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/product_details_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/profile/edit_profile_page.dart';
@@ -22,6 +21,7 @@ import 'package:sole_space_user1/features/home/presentation/pages/product%20rela
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/see_all_product.dart';
 import 'package:sole_space_user1/features/home/presentation/widgets/home/home_search_bar.dart';
+import 'package:sole_space_user1/features/orders/presentation/pages/orders_page.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
 

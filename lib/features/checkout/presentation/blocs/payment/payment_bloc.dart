@@ -55,12 +55,16 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
         currency: event.currency,
       );
 
-      await _paymentService.processPayment(
+      final success = await _paymentService.processPayment(
         clientSecret: paymentIntent['clientSecret'],
         billingDetails: event.billingDetails,
       );
 
-      emit(PaymentSuccess());
+      if (success) {
+        emit(PaymentSuccess(paymentIntent['paymentIntentId']));
+      } else {
+        emit(const PaymentError('Payment was cancelled'));
+      }
     } catch (e) {
       emit(PaymentError(e.toString()));
     }

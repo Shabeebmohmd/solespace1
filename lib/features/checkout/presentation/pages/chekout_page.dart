@@ -10,10 +10,10 @@ import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/pa
 import 'package:sole_space_user1/features/checkout/presentation/widgets/address/address_card.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/checkout_summary.dart';
 import 'package:sole_space_user1/features/checkout/presentation/widgets/checkout/order_item_list.dart';
-import 'package:sole_space_user1/features/home/models/order_model.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/cart/cart_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CheckoutPage extends StatelessWidget {
@@ -183,8 +183,7 @@ class CheckoutPage extends StatelessWidget {
             total: total,
             status: 'pending',
             createdAt: DateTime.now(),
-            paymentIntentId:
-                '', // You might want to store this from the payment response
+            paymentIntentId: state.paymentIntentId,
             addressId: selectedAddress.id,
             fullName: selectedAddress.fullName,
             address: selectedAddress.address,
@@ -205,12 +204,6 @@ class CheckoutPage extends StatelessWidget {
           if (Navigator.canPop(context)) {
             Navigator.pop(context);
           }
-
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Order placed successfully!')),
-          );
-
           // Navigate to success page or home
           Navigator.pushReplacementNamed(context, AppRouter.confirmation);
           break;
@@ -220,9 +213,16 @@ class CheckoutPage extends StatelessWidget {
             Navigator.pop(context);
           }
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Payment failed: ${state.message}')),
-          );
+          // Check if the error is due to user cancellation
+          if (state.message.toLowerCase().contains('canceled')) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Payment was cancelled')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Payment failed: ${state.message}')),
+            );
+          }
           break;
         }
       }
@@ -232,9 +232,16 @@ class CheckoutPage extends StatelessWidget {
         Navigator.pop(context);
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Payment failed: ${e.toString()}')),
-      );
+      // Check if the error is due to user cancellation
+      if (e.toString().toLowerCase().contains('canceled')) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Payment was cancelled')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Payment failed: ${e.toString()}')),
+        );
+      }
     }
   }
 }

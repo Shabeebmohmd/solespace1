@@ -24,9 +24,9 @@ import 'package:sole_space_user1/core/config/cloudinary_config.dart';
 import 'package:sole_space_user1/features/checkout/data/services/payment_service.dart';
 import 'package:sole_space_user1/core/constants/stripe_constants.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/payment/payment_bloc.dart';
-import 'package:sole_space_user1/features/home/data/order_repository.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
+import 'package:sole_space_user1/features/orders/data/order_repository.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sole_space_user1/features/home/models/order_model.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
 
 class OrderRepository {
   final firestore.FirebaseFirestore _firestore =

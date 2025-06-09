@@ -30,7 +30,7 @@ class PaymentService {
         body: {
           'amount': (amount * 100).round().toString(),
           'currency': currency,
-          'automatic_payment_methods[enabled]': 'true',
+          'payment_method_types[]': 'card',
         },
       );
 
@@ -39,7 +39,10 @@ class PaymentService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {'clientSecret': data['client_secret']};
+        return {
+          'clientSecret': data['client_secret'],
+          'paymentIntentId': data['id'],
+        };
       } else {
         final error = jsonDecode(response.body);
         throw Exception(
@@ -66,6 +69,9 @@ class PaymentService {
           merchantDisplayName: 'Sole Space',
           style: ThemeMode.system,
           billingDetails: billingDetails,
+          appearance: const PaymentSheetAppearance(
+            colors: PaymentSheetAppearanceColors(primary: Colors.blue),
+          ),
         ),
       );
 

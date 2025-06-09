@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:sole_space_user1/features/home/models/order_model.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
 
 abstract class OrderState extends Equatable {
   const OrderState();
@@ -14,11 +14,12 @@ class OrderLoading extends OrderState {}
 
 class OrderLoaded extends OrderState {
   final List<Order> orders;
+  final String selectedFilter;
 
-  const OrderLoaded(this.orders);
+  const OrderLoaded(this.orders, {this.selectedFilter = 'all'});
 
   @override
-  List<Object?> get props => [orders];
+  List<Object?> get props => [orders, selectedFilter];
 }
 
 class OrderError extends OrderState {

@@ -1,60 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
-import 'package:sole_space_user1/features/home/models/order_model.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_bloc.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_event.dart';
-import 'package:sole_space_user1/features/home/presentation/blocs/order/order_state.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
+import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 
-class OrdersPage extends StatefulWidget {
-  const OrdersPage({super.key});
-
-  @override
-  State<OrdersPage> createState() => _OrdersPageState();
-}
-
-class _OrdersPageState extends State<OrdersPage> {
-  @override
-  void initState() {
-    context.read<OrderBloc>().add(LoadOrders());
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: const Text('Orders')),
-      body: BlocBuilder<OrderBloc, OrderState>(
-        builder: (context, state) {
-          if (state is OrderLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is OrderLoaded) {
-            if (state.orders.isEmpty) {
-              return const Center(child: Text('No orders found'));
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.orders.length,
-              itemBuilder: (context, index) {
-                final order = state.orders[index];
-                return _OrderCard(order: order);
-              },
-            );
-          } else if (state is OrderError) {
-            return Center(child: Text('Error: ${state.message}'));
-          }
-          return const SizedBox();
-        },
-      ),
-    );
-  }
-}
-
-class _OrderCard extends StatelessWidget {
+class OrderCard extends StatelessWidget {
   final Order order;
 
-  const _OrderCard({required this.order});
+  const OrderCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -75,33 +30,33 @@ class _OrderCard extends StatelessWidget {
                 _buildStatusChip(order.status),
               ],
             ),
-            const SizedBox(height: 8),
+            smallSpacing,
             Text(
               'Date: ${DateFormat('MMM dd, yyyy').format(order.createdAt)}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 8),
+            smallSpacing,
             Text(
               'Total: \$${order.total.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            const SizedBox(height: 16),
+            mediumSpacing,
             const Divider(),
-            const SizedBox(height: 8),
+            smallSpacing,
             Text(
               'Shipping Address:',
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            const SizedBox(height: 4),
+            smallSpacing,
             Text(
               '${order.fullName}\n${order.address}\n${order.city}, ${order.state} ${order.postalCode}\n${order.phoneNumber}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            mediumSpacing,
             const Divider(),
-            const SizedBox(height: 8),
+            smallSpacing,
             Text('Items:', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
+            smallSpacing,
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -133,21 +88,68 @@ class _OrderCard extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 8),
+            smallSpacing,
             if (order.trackingNumber != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Tracking ID: ${order.trackingNumber}'),
 
-                  order.status != 'Cancelled' && order.status != 'Delivered'
-                      ? TextButton(
-                        onPressed: () {
-                          // Add your cancel order function here
-                        },
-                        child: const Text('Cancel'),
-                      )
-                      : const SizedBox.shrink(),
+                  Builder(
+                    builder: (context) {
+                      print('Order Status: ${order.status}');
+                      print('Status Lowercase: ${order.status.toLowerCase()}');
+                      print(
+                        'Is Cancelled: ${order.status.toLowerCase() == 'cancelled'}',
+                      );
+                      print(
+                        'Is Delivered: ${order.status.toLowerCase() == 'delivered'}',
+                      );
+
+                      return order.status.toLowerCase() != 'cancelled' &&
+                              order.status.toLowerCase() != 'delivered'
+                          ? TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: Text(
+                                        'Are you sure you want to cancel this item',
+                                      ),
+                                      actions: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(context),
+                                              child: Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                context.read<OrderBloc>().add(
+                                                  UpdateOrderStatus(
+                                                    orderId: order.id,
+                                                    status: 'cancelled',
+                                                  ),
+                                                );
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Ok'),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                              );
+                            },
+                            child: const Text('Cancel'),
+                          )
+                          : const SizedBox.shrink();
+                    },
+                  ),
                 ],
               )
             else
