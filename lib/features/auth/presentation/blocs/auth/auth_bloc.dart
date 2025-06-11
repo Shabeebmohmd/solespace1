@@ -222,7 +222,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.signOut();
       emit(Unauthenticated());
     } catch (e) {
-      emit(AuthError(message: 'Failed to sign out. Please try again.'));
+      // emit(AuthError(message: 'Failed to sign out. Please try again.'));
       emit(Unauthenticated());
     }
   }
