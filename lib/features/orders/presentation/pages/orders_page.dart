@@ -4,7 +4,9 @@ import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_state.dart';
+import 'package:sole_space_user1/features/orders/presentation/widgets/filter_chips.dart';
 import 'package:sole_space_user1/features/orders/presentation/widgets/order_card.dart';
+import 'package:sole_space_user1/features/orders/utils/order_utils.dart';
 
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
@@ -25,7 +27,7 @@ class OrdersPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          _buildFilterChips(context),
+          FilterChips(),
           Expanded(
             child: BlocBuilder<OrderBloc, OrderState>(
               builder: (context, state) {
@@ -36,16 +38,10 @@ class OrdersPage extends StatelessWidget {
                     return const Center(child: Text('No orders found'));
                   }
 
-                  final filteredOrders =
-                      state.selectedFilter == 'all'
-                          ? state.orders
-                          : state.orders
-                              .where(
-                                (order) =>
-                                    order.status.toLowerCase() ==
-                                    state.selectedFilter.toLowerCase(),
-                              )
-                              .toList();
+                  final filteredOrders = filterOrders(
+                    state.orders,
+                    state.selectedFilter,
+                  );
 
                   if (filteredOrders.isEmpty) {
                     return Center(
@@ -70,52 +66,6 @@ class OrdersPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFilterChips(BuildContext context) {
-    return BlocBuilder<OrderBloc, OrderState>(
-      builder: (context, state) {
-        if (state is! OrderLoaded) return const SizedBox();
-
-        final filters = [
-          'all',
-          'processing',
-          'shipped',
-          'delivered',
-          'cancelled',
-        ];
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children:
-                filters.map((filter) {
-                  final isSelected = state.selectedFilter == filter;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Text(
-                        '${filter[0].toUpperCase()}${filter.substring(1)}',
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : null,
-                        ),
-                      ),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          context.read<OrderBloc>().add(FilterOrders(filter));
-                        }
-                      },
-                      backgroundColor:
-                          isSelected ? Theme.of(context).primaryColor : null,
-                    ),
-                  );
-                }).toList(),
-          ),
-        );
-      },
     );
   }
 }

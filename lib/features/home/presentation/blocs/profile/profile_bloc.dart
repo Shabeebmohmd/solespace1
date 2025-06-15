@@ -123,7 +123,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       // Update email if changed
       if (event.email != currentUser.email) {
-        await user!.updateEmail(event.email);
+        await user!.verifyBeforeUpdateEmail(event.email);
       }
 
       // Update password if provided

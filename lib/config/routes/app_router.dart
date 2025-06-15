@@ -21,6 +21,8 @@ import 'package:sole_space_user1/features/home/presentation/pages/product%20rela
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/profile_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/product%20related/see_all_product.dart';
 import 'package:sole_space_user1/features/home/presentation/widgets/home/home_search_bar.dart';
+import 'package:sole_space_user1/features/orders/model/order_model.dart';
+import 'package:sole_space_user1/features/orders/presentation/pages/order_details_page.dart';
 import 'package:sole_space_user1/features/orders/presentation/pages/orders_page.dart';
 import 'package:sole_space_user1/features/splash/presentation/pages/splash_page.dart';
 import 'package:sole_space_user1/features/home/presentation/pages/tabs/home_page.dart';
@@ -59,6 +61,7 @@ class AppRouter {
   // settings page
   static const String settingsPage = '/settings-page';
   static const String orderPage = '/order-page';
+  static const String orderDetailsPage = '/order-details-page';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -119,6 +122,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SettingsPage());
       case orderPage:
         return MaterialPageRoute(builder: (_) => OrdersPage());
+      case orderDetailsPage:
+        final order = settings.arguments as Order;
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailsPage(order: order),
+        );
       default:
         return MaterialPageRoute(
           builder:

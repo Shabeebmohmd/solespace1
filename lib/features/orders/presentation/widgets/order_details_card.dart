@@ -1,31 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/features/orders/model/order_model.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 import 'package:sole_space_user1/features/orders/presentation/widgets/status_chip.dart';
 
-class OrderCard extends StatelessWidget {
+class OrderDetailsCard extends StatelessWidget {
   final Order order;
-  const OrderCard({super.key, required this.order});
+  const OrderDetailsCard({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap:
-          () => Navigator.pushNamed(
-            context,
-            AppRouter.orderDetailsPage,
-            arguments: order,
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -56,6 +51,52 @@ class OrderCard extends StatelessWidget {
               mediumSpacing,
               const Divider(),
               smallSpacing,
+              Text(
+                'Shipping Address:',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              smallSpacing,
+              Text(
+                '${order.fullName}\n${order.address}\n${order.city}, ${order.state} ${order.postalCode}\n${order.phoneNumber}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              mediumSpacing,
+              const Divider(),
+              smallSpacing,
+              Text('Items:', style: Theme.of(context).textTheme.titleSmall),
+              smallSpacing,
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: order.items.length,
+                itemBuilder: (context, index) {
+                  final item = order.items[index];
+                  return ListTile(
+                    leading:
+                        item.imageUrl.isNotEmpty
+                            ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                item.imageUrl,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        const Icon(Icons.error),
+                              ),
+                            )
+                            : const Icon(Icons.image_not_supported),
+                    title: Text(item.name),
+                    subtitle: Text('Size: ${item.size}'),
+                    trailing: Text(
+                      'Qty: ${item.quantity}\n\$${(item.price * item.quantity).toStringAsFixed(2)}',
+                      textAlign: TextAlign.end,
+                    ),
+                  );
+                },
+              ),
+              smallSpacing,
               if (order.trackingNumber != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,17 +105,6 @@ class OrderCard extends StatelessWidget {
 
                     Builder(
                       builder: (context) {
-                        print('Order Status: ${order.status}');
-                        print(
-                          'Status Lowercase: ${order.status.toLowerCase()}',
-                        );
-                        print(
-                          'Is Cancelled: ${order.status.toLowerCase() == 'cancelled'}',
-                        );
-                        print(
-                          'Is Delivered: ${order.status.toLowerCase() == 'delivered'}',
-                        );
-
                         return order.status.toLowerCase() != 'cancelled' &&
                                 order.status.toLowerCase() != 'delivered'
                             ? TextButton(
