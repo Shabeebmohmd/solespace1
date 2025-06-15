@@ -28,6 +28,34 @@ class BrandBasedProductListPage extends StatelessWidget {
           if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ProductLoaded) {
+            if (state.data.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No products found',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'We couldn\'t find any products for this brand',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              );
+            }
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GridView.builder(
@@ -49,7 +77,7 @@ class BrandBasedProductListPage extends StatelessWidget {
           } else if (state is ProductError) {
             return Center(child: Text(state.message));
           } else {
-            return const Center(child: Text('No products found'));
+            return const SizedBox.shrink();
           }
         },
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/core/utils/snack_bar_utils.dart';
 import 'package:sole_space_user1/features/home/models/product_model.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
 
@@ -99,6 +100,12 @@ class ProductCard extends StatelessWidget {
                       context.read<ProductBloc>().add(
                         ToggleFavorite(product: product),
                       );
+                      if (isFavorited) {
+                        SnackbarUtils.showSnackbar(
+                          context: context,
+                          message: 'Item removed from favorites',
+                        );
+                      }
                     },
                   );
                 },

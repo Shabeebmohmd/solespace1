@@ -24,7 +24,7 @@ class OurProductsSection extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Our products',
+                      'Products',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

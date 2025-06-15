@@ -116,7 +116,7 @@ class SettingsPage extends StatelessWidget {
             children: [
               Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode, size: 24),
               const SizedBox(width: 16),
-              Text('Dark Mode', style: Theme.of(context).textTheme.bodyLarge),
+              Text('Theme Mode', style: Theme.of(context).textTheme.bodyLarge),
               const Spacer(),
               Switch(
                 value: isDarkMode,
