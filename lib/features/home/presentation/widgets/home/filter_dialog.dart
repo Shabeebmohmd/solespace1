@@ -16,45 +16,42 @@ class FilterDialog extends StatefulWidget {
 }
 
 class _FilterDialogState extends State<FilterDialog> {
-  String? selectedBrandId;
-  String? selectedCategoryId;
+  List<String> selectedBrandIds = [];
+  List<String> selectedCategoryIds = [];
+  List<String> selectedSizes = [];
   String? selectedColor;
-  String? selectedSize;
-  final TextEditingController minPriceController = TextEditingController();
-  final TextEditingController maxPriceController = TextEditingController();
+  RangeValues _priceRange = const RangeValues(
+    0,
+    5000,
+  ); // Default range from 0 to 1000
+  double rating = 0;
 
   @override
   void dispose() {
-    minPriceController.dispose();
-    maxPriceController.dispose();
     super.dispose();
   }
 
   void _clearFilters() {
     setState(() {
-      selectedBrandId = null;
-      selectedCategoryId = null;
+      selectedBrandIds = [];
+      selectedCategoryIds = [];
+      selectedSizes = [];
       selectedColor = null;
-      selectedSize = null;
-      minPriceController.clear();
-      maxPriceController.clear();
+      _priceRange = const RangeValues(0, 5000);
     });
     context.read<ProductBloc>().add(const FilterProducts());
     Navigator.pop(context);
   }
 
   void _applyFilters() {
-    final minPrice = double.tryParse(minPriceController.text);
-    final maxPrice = double.tryParse(maxPriceController.text);
-
     context.read<ProductBloc>().add(
       FilterProducts(
-        brandId: selectedBrandId,
-        categoryId: selectedCategoryId,
-        minPrice: minPrice,
-        maxPrice: maxPrice,
+        brandIds: selectedBrandIds,
+        categoryIds: selectedCategoryIds,
+        minPrice: _priceRange.start,
+        maxPrice: _priceRange.end,
         color: selectedColor,
-        size: selectedSize,
+        sizes: selectedSizes,
       ),
     );
 
@@ -93,28 +90,31 @@ class _FilterDialogState extends State<FilterDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Brand',
+                          'Brands',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: selectedBrandId,
-                          hint: const Text('Select Brand'),
-                          items:
+                        Wrap(
+                          spacing: 8,
+                          children:
                               state.data.map((Brand brand) {
-                                return DropdownMenuItem(
-                                  value: brand.id,
-                                  child: Text(brand.name),
+                                return FilterChip(
+                                  label: Text(brand.name),
+                                  selected: selectedBrandIds.contains(brand.id),
+                                  onSelected: (selected) {
+                                    setState(() {
+                                      if (selected) {
+                                        selectedBrandIds.add(brand.id);
+                                      } else {
+                                        selectedBrandIds.remove(brand.id);
+                                      }
+                                    });
+                                  },
                                 );
                               }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedBrandId = value;
-                            });
-                          },
                         ),
                       ],
                     );
@@ -131,28 +131,33 @@ class _FilterDialogState extends State<FilterDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Category',
+                          'Categories',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: selectedCategoryId,
-                          hint: const Text('Select Category'),
-                          items:
+                        Wrap(
+                          spacing: 8,
+                          children:
                               state.data.map((Category category) {
-                                return DropdownMenuItem(
-                                  value: category.id,
-                                  child: Text(category.name),
+                                return FilterChip(
+                                  label: Text(category.name),
+                                  selected: selectedCategoryIds.contains(
+                                    category.id,
+                                  ),
+                                  onSelected: (selected) {
+                                    setState(() {
+                                      if (selected) {
+                                        selectedCategoryIds.add(category.id);
+                                      } else {
+                                        selectedCategoryIds.remove(category.id);
+                                      }
+                                    });
+                                  },
                                 );
                               }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedCategoryId = value;
-                            });
-                          },
                         ),
                       ],
                     );
@@ -166,56 +171,33 @@ class _FilterDialogState extends State<FilterDialog> {
                 'Price Range',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: minPriceController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        hintText: 'Min Price',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: maxPriceController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        hintText: 'Max Price',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
+              mediumSpacing,
+              RangeSlider(
+                values: _priceRange,
+                min: 0,
+                max: 5000,
+                divisions: 100,
+                labels: RangeLabels(
+                  '\$${_priceRange.start.round()}',
+                  '\$${_priceRange.end.round()}',
+                ),
+                onChanged: (RangeValues values) {
+                  setState(() {
+                    _priceRange = values;
+                  });
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('\$${_priceRange.start.round()}'),
+                    Text('\$${_priceRange.end.round()}'),
+                  ],
+                ),
               ),
               mediumSpacing,
-              // // Color Filter
-              // const Text(
-              //   'Color',
-              //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              // ),
-              // const SizedBox(height: 8),
-              // Wrap(
-              //   spacing: 8,
-              //   children:
-              //       ['Red', 'Blue', 'Black', 'White', 'Green'].map((color) {
-              //         return ChoiceChip(
-              //           label: Text(color),
-              //           selected: selectedColor == color,
-              //           onSelected: (selected) {
-              //             setState(() {
-              //               selectedColor = selected ? color : null;
-              //             });
-              //           },
-              //         );
-              //       }).toList(),
-              // ),
-              // const SizedBox(height: 16),
-              // Size Filter
               const Text(
                 'Size',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -225,12 +207,16 @@ class _FilterDialogState extends State<FilterDialog> {
                 spacing: 8,
                 children:
                     ['6', '7', '8', '9', '10', '11', '12'].map((size) {
-                      return ChoiceChip(
+                      return FilterChip(
                         label: Text(size),
-                        selected: selectedSize == size,
+                        selected: selectedSizes.contains(size),
                         onSelected: (selected) {
                           setState(() {
-                            selectedSize = selected ? size : null;
+                            if (selected) {
+                              selectedSizes.add(size);
+                            } else {
+                              selectedSizes.remove(size);
+                            }
                           });
                         },
                       );

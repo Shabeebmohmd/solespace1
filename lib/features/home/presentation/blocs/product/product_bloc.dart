@@ -137,17 +137,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final currentState = state as ProductLoaded;
       var filteredProducts = _allProducts;
 
-      if (event.brandId != null && event.brandId!.isNotEmpty) {
+      if (event.brandIds.isNotEmpty) {
         filteredProducts =
             filteredProducts
-                .where((product) => product.brandId == event.brandId)
+                .where((product) => event.brandIds.contains(product.brandId))
                 .toList();
       }
 
-      if (event.categoryId != null && event.categoryId!.isNotEmpty) {
+      if (event.categoryIds.isNotEmpty) {
         filteredProducts =
             filteredProducts
-                .where((product) => product.categoryId == event.categoryId)
+                .where(
+                  (product) => event.categoryIds.contains(product.categoryId),
+                )
                 .toList();
       }
 
@@ -173,10 +175,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
                 .toList();
       }
 
-      if (event.size != null && event.size!.isNotEmpty) {
+      if (event.sizes.isNotEmpty) {
         filteredProducts =
             filteredProducts
-                .where((product) => product.sizes.contains(event.size))
+                .where(
+                  (product) =>
+                      product.sizes.any((size) => event.sizes.contains(size)),
+                )
                 .toList();
       }
 
