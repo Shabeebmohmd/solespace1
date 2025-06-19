@@ -4,6 +4,8 @@ import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
+import 'package:sole_space_user1/core/widgets/responsive_container.dart';
+import 'package:sole_space_user1/core/utils/responsive_utils.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
@@ -51,72 +53,117 @@ class LoginPage extends StatelessWidget {
           }
         },
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          largeSpacing,
-                          _buildWelcomeText(context),
-                          smallSpacing,
-                          _buildContinueText(context),
-                          largeSpacing,
-                          _buildEmailField(),
-                          mediumSpacing,
-                          BlocBuilder<PasswordBloc, PasswordState>(
-                            builder: (context, state) {
-                              return _buildPasswordField(state, context);
-                            },
-                          ),
-                          smallSpacing,
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _buildResetButton(context),
-                          ),
-                          mediumSpacing,
-                          BlocBuilder<AuthBloc, AuthState>(
-                            builder: (context, state) {
-                              return _buildSignInButton(handleLogin, state);
-                            },
-                          ),
-                          mediumSpacing,
-                          Row(
+          child: ResponsiveContainer(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isWideScreen = ResponsiveUtils.isWideScreen(constraints);
+
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Expanded(child: Divider()),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.top,
                                 ),
-                                child: _orText(context),
                               ),
-                              const Expanded(child: Divider()),
+                              _buildWelcomeText(context),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.titleGap,
+                                ),
+                              ),
+                              _buildContinueText(context),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.contentGap,
+                                ),
+                              ),
+                              _buildEmailField(),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.fieldGap,
+                                ),
+                              ),
+                              BlocBuilder<PasswordBloc, PasswordState>(
+                                builder: (context, state) {
+                                  return _buildPasswordField(state, context);
+                                },
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.smallGap,
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: _buildResetButton(context),
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.mediumGap,
+                                ),
+                              ),
+                              BlocBuilder<AuthBloc, AuthState>(
+                                builder: (context, state) {
+                                  return _buildSignInButton(handleLogin, state);
+                                },
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.mediumGap,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  const Expanded(child: Divider()),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: _orText(context),
+                                  ),
+                                  const Expanded(child: Divider()),
+                                ],
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.mediumGap,
+                                ),
+                              ),
+                              _buildGoogleSignInButton(handleGoogleSignIn),
                             ],
                           ),
-                          mediumSpacing,
-                          _buildGoogleSignInButton(handleGoogleSignIn),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                // Sign Up row at the bottom
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Don\'t have an account?',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    // Sign Up row at the bottom
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Don\'t have an account?',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        _buildSignUpButton(context),
+                      ],
                     ),
-                    _buildSignUpButton(context),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),

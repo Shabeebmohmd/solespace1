@@ -10,74 +10,171 @@ class CartListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading:
-          item.imageUrl.isNotEmpty
-              ? ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  item.imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder:
-                      (context, error, stackTrace) => const Icon(Icons.error),
-                ),
-              )
-              : const Icon(Icons.image_not_supported),
-      title: Text(item.name),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Price: \$${item.price.toStringAsFixed(2)}'),
-          Text('Size: ${item.size}'),
-        ],
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove_circle),
-            onPressed: () {
-              if (item.quantity > 1) {
-                context.read<CartBloc>().add(
-                  UpdateCartQuantity(
-                    '${item.productId}_${item.size}',
-                    item.quantity - 1,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // If width is greater than 600, use a horizontal layout (good for web)
+        if (constraints.maxWidth > 600) {
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  item.imageUrl.isNotEmpty
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          item.imageUrl,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.error),
+                        ),
+                      )
+                      : const Icon(Icons.image_not_supported, size: 100),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text('Price: \$${item.price.toStringAsFixed(2)}'),
+                        Text('Size: ${item.size}'),
+                      ],
+                    ),
                   ),
-                );
-              } else {
-                context.read<CartBloc>().add(
-                  RemoveFromCart('${item.productId}_${item.size}'),
-                );
-              }
-            },
-          ),
-          Text('${item.quantity}'),
-          IconButton(
-            icon: Icon(
-              Icons.add_circle,
-              color: Theme.of(context).colorScheme.primaryContainer,
+                  const SizedBox(width: 24),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle),
+                        onPressed: () {
+                          if (item.quantity > 1) {
+                            context.read<CartBloc>().add(
+                              UpdateCartQuantity(
+                                '${item.productId}_${item.size}',
+                                item.quantity - 1,
+                              ),
+                            );
+                          } else {
+                            context.read<CartBloc>().add(
+                              RemoveFromCart('${item.productId}_${item.size}'),
+                            );
+                          }
+                        },
+                      ),
+                      Text('${item.quantity}'),
+                      IconButton(
+                        icon: Icon(
+                          Icons.add_circle,
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                        ),
+                        onPressed: () {
+                          context.read<CartBloc>().add(
+                            UpdateCartQuantity(
+                              '${item.productId}_${item.size}',
+                              item.quantity + 1,
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          context.read<CartBloc>().add(
+                            RemoveFromCart('${item.productId}_${item.size}'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            onPressed: () {
-              context.read<CartBloc>().add(
-                UpdateCartQuantity(
-                  '${item.productId}_${item.size}',
-                  item.quantity + 1,
+          );
+        } else {
+          // Mobile layout (original ListTile)
+          return ListTile(
+            leading:
+                item.imageUrl.isNotEmpty
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        item.imageUrl,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) =>
+                                const Icon(Icons.error),
+                      ),
+                    )
+                    : const Icon(Icons.image_not_supported),
+            title: Text(item.name),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Price: \$${item.price.toStringAsFixed(2)}'),
+                Text('Size: ${item.size}'),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove_circle),
+                  onPressed: () {
+                    if (item.quantity > 1) {
+                      context.read<CartBloc>().add(
+                        UpdateCartQuantity(
+                          '${item.productId}_${item.size}',
+                          item.quantity - 1,
+                        ),
+                      );
+                    } else {
+                      context.read<CartBloc>().add(
+                        RemoveFromCart('${item.productId}_${item.size}'),
+                      );
+                    }
+                  },
                 ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              context.read<CartBloc>().add(
-                RemoveFromCart('${item.productId}_${item.size}'),
-              );
-            },
-          ),
-        ],
-      ),
+                Text('${item.quantity}'),
+                IconButton(
+                  icon: Icon(
+                    Icons.add_circle,
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                  ),
+                  onPressed: () {
+                    context.read<CartBloc>().add(
+                      UpdateCartQuantity(
+                        '${item.productId}_${item.size}',
+                        item.quantity + 1,
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    context.read<CartBloc>().add(
+                      RemoveFromCart('${item.productId}_${item.size}'),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 }

@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
+import 'package:sole_space_user1/core/widgets/responsive_container.dart';
+import 'package:sole_space_user1/core/utils/responsive_utils.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -28,14 +31,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       setState(() => _isLoading = true);
       try {
         await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: _emailController.text,
+          email: _emailController.text.trim(),
         );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
+            SnackBar(
+              content: const Text(
                 'Password reset email sent. Please check your inbox.',
               ),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
           );
           Navigator.pushReplacementNamed(context, AppRouter.login);
@@ -43,7 +47,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.message ?? 'An error occurred')),
+            SnackBar(
+              content: Text(e.message ?? 'An error occurred'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
           );
         }
       } finally {
@@ -60,53 +67,103 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const Text(
-                  'Reset Password',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        child: ResponsiveContainer(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isWideScreen = ResponsiveUtils.isWideScreen(constraints);
+
+              return Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: ResponsiveUtils.getSpacing(
+                        isWideScreen,
+                        SpacingType.top,
+                      ),
+                    ),
+                    _buildMainText(context),
+                    SizedBox(
+                      height: ResponsiveUtils.getSpacing(
+                        isWideScreen,
+                        SpacingType.titleGap,
+                      ),
+                    ),
+                    _buildSecondaryText(context),
+                    SizedBox(
+                      height: ResponsiveUtils.getSpacing(
+                        isWideScreen,
+                        SpacingType.contentGap,
+                      ),
+                    ),
+                    _buildEmailField(),
+                    SizedBox(
+                      height: ResponsiveUtils.getSpacing(
+                        isWideScreen,
+                        SpacingType.contentGap,
+                      ),
+                    ),
+                    _buildResetButton(),
+                    const Spacer(),
+                    _buildBackToLoginButton(context),
+                    SizedBox(
+                      height: ResponsiveUtils.getSpacing(
+                        isWideScreen,
+                        SpacingType.mediumGap,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Enter your email address to reset your password',
-                  style: TextStyle(color: Colors.white70),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                CustomTextField(
-                  label: 'Email',
-                  hint: 'Enter your email',
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                    if (!emailRegex.hasMatch(value)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 40),
-                CustomButton(
-                  text: _isLoading ? 'Sending...' : 'Reset Pasword',
-                  onPressed: _isLoading ? () {} : _resetPassword,
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
+    );
+  }
+
+  Text _buildMainText(BuildContext context) {
+    return Text(
+      'Reset Password',
+      style: Theme.of(
+        context,
+      ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Text _buildSecondaryText(BuildContext context) {
+    return Text(
+      'Enter your email address to reset your password',
+      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  CustomTextField _buildEmailField() {
+    return CustomTextField(
+      label: 'Email',
+      hint: 'Enter your email',
+      controller: _emailController,
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) => validateEmail(value),
+    );
+  }
+
+  CustomButton _buildResetButton() {
+    return CustomButton(
+      text: _isLoading ? 'Sending...' : 'Reset Password',
+      onPressed: _isLoading ? null : _resetPassword,
+      isLoading: _isLoading,
+    );
+  }
+
+  TextButton _buildBackToLoginButton(BuildContext context) {
+    return TextButton(
+      onPressed: () => Navigator.pushReplacementNamed(context, AppRouter.login),
+      child: const Text('Back to Login'),
     );
   }
 }

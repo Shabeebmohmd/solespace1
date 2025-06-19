@@ -4,7 +4,7 @@ enum CustomButtonVariant { primary, secondary, outline }
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final CustomButtonVariant variant;
   final bool isLoading;
   final bool isFullWidth;

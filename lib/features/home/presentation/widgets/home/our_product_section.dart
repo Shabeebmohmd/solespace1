@@ -4,6 +4,7 @@ import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/widgets/custom_product_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/product/product_bloc.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class OurProductsSection extends StatelessWidget {
   const OurProductsSection({super.key});
@@ -41,24 +42,43 @@ class OurProductsSection extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  height: MediaQuery.sizeOf(context).height * 0.25,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.data.length,
-                    itemBuilder: (context, index) {
-                      final product = state.data[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: SizedBox(
-                          width:
-                              MediaQuery.of(context).size.width *
-                              0.4, // Responsive width for each item
-                          child: ProductCard(product: product),
-                        ),
-                      );
-                    },
-                  ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double itemWidth;
+                    double itemHeight;
+                    final screenHeight = MediaQuery.of(context).size.height;
+
+                    if (kIsWeb) {
+                      itemWidth =
+                          constraints.maxWidth *
+                          0.25; // or a fixed value like 250
+                      itemHeight =
+                          screenHeight * 0.35; // 35% of screen height for web
+                    } else {
+                      itemWidth = MediaQuery.of(context).size.width * 0.4;
+                      itemHeight =
+                          screenHeight *
+                          0.25; // 25% of screen height for mobile
+                    }
+
+                    return SizedBox(
+                      height: itemHeight,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.data.length,
+                        itemBuilder: (context, index) {
+                          final product = state.data[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: SizedBox(
+                              width: itemWidth,
+                              child: ProductCard(product: product),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

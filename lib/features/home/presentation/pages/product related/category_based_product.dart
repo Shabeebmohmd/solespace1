@@ -30,23 +30,36 @@ class CategoryBasedProductListPage extends StatelessWidget {
           if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ProductLoaded) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: state.data.length,
-                itemBuilder: (context, index) {
-                  final product = state.data[index];
-                  return ProductCard(product: product);
-                },
-              ),
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = 2;
+                double width = constraints.maxWidth;
+                if (width >= 1200) {
+                  crossAxisCount = 5;
+                } else if (width >= 900) {
+                  crossAxisCount = 4;
+                } else if (width >= 600) {
+                  crossAxisCount = 3;
+                }
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: state.data.length,
+                    itemBuilder: (context, index) {
+                      final product = state.data[index];
+                      return ProductCard(product: product);
+                    },
+                  ),
+                );
+              },
             );
           } else if (state is ProductError) {
             return Center(child: Text(state.message));

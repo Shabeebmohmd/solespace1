@@ -53,10 +53,13 @@ class CartPage extends StatelessWidget {
                         },
                       ),
                     ),
-                    CartSummary(
-                      total: total,
-                      subTotal: subTotal,
-                      shipping: shipping,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: CartSummary(
+                        total: total,
+                        subTotal: subTotal,
+                        shipping: shipping,
+                      ),
                     ),
                   ],
                 );

@@ -4,6 +4,8 @@ import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_button.dart';
 import 'package:sole_space_user1/core/widgets/custom_text_field.dart';
+import 'package:sole_space_user1/core/widgets/responsive_container.dart';
+import 'package:sole_space_user1/core/utils/responsive_utils.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_event.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_state.dart';
@@ -48,60 +50,102 @@ class RegisterPage extends StatelessWidget {
           }
         },
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    // padding: const EdgeInsets.all(24.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          largeSpacing,
-                          _buildMainText(context),
-                          smallSpacing,
-                          _buildSecondaryText(context),
-                          largeSpacing,
-                          _buildNameField(),
-                          mediumSpacing,
-                          _buildEmailField(),
-                          mediumSpacing,
-                          BlocBuilder<PasswordBloc, PasswordState>(
-                            builder: (context, state) {
-                              return _buildPasswordField(state, context);
-                            },
+          child: ResponsiveContainer(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isWideScreen = ResponsiveUtils.isWideScreen(constraints);
+
+                return Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.top,
+                                ),
+                              ),
+                              _buildMainText(context),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.titleGap,
+                                ),
+                              ),
+                              _buildSecondaryText(context),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.contentGap,
+                                ),
+                              ),
+                              _buildNameField(),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.fieldGap,
+                                ),
+                              ),
+                              _buildEmailField(),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.fieldGap,
+                                ),
+                              ),
+                              BlocBuilder<PasswordBloc, PasswordState>(
+                                builder: (context, state) {
+                                  return _buildPasswordField(state, context);
+                                },
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.fieldGap,
+                                ),
+                              ),
+                              BlocBuilder<PasswordBloc, PasswordState>(
+                                builder: (context, state) {
+                                  return _buildConfirmPassField(state, context);
+                                },
+                              ),
+                              SizedBox(
+                                height: ResponsiveUtils.getSpacing(
+                                  isWideScreen,
+                                  SpacingType.contentGap,
+                                ),
+                              ),
+                              BlocBuilder<AuthBloc, AuthState>(
+                                builder: (context, state) {
+                                  return _buildCreateButton(
+                                    handleRegister,
+                                    state,
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          mediumSpacing,
-                          BlocBuilder<PasswordBloc, PasswordState>(
-                            builder: (context, state) {
-                              return _buildConfirmPassField(state, context);
-                            },
-                          ),
-                          extraMediumSpacing,
-                          BlocBuilder<AuthBloc, AuthState>(
-                            builder: (context, state) {
-                              return _buildCreateButton(handleRegister, state);
-                            },
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already have an account?',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        _buildSingInButton(context),
+                      ],
                     ),
-                    _buildSingInButton(context),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),

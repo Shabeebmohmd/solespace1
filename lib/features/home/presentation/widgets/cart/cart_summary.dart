@@ -17,55 +17,67 @@ class CartSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Subtotal:"),
-                Text("\$${subTotal.toStringAsFixed(2)}"),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxWidth = constraints.maxWidth;
+        double containerWidth =
+            maxWidth > 600 ? 400 : double.infinity; // Example breakpoint
+
+        return Center(
+          child: Container(
+            width: containerWidth,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceBright,
+              borderRadius: BorderRadius.circular(16),
             ),
-            mediumSpacing,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Shipping:"),
-                Text(' \$${shipping.toStringAsFixed(2)}'),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Subtotal:"),
+                      Text("\$${subTotal.toStringAsFixed(2)}"),
+                    ],
+                  ),
+                  mediumSpacing,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Shipping:"),
+                      Text(' \$${shipping.toStringAsFixed(2)}'),
+                    ],
+                  ),
+                  mediumSpacing,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Total: ",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "\$${total.toStringAsFixed(2)}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  mediumSpacing,
+                  CustomButton(
+                    isFullWidth: maxWidth <= 600,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRouter.checkOut);
+                    },
+                    text: 'Checkout',
+                  ),
+                ],
+              ),
             ),
-            mediumSpacing,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Total: ",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "\$${total.toStringAsFixed(2)}",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            mediumSpacing,
-            CustomButton(
-              onPressed: () {
-                Navigator.pushNamed(context, AppRouter.checkOut);
-              },
-              text: 'Checkout',
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

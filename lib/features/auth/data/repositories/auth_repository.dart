@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sole_space_user1/features/auth/data/model/user_model.dart';
 
@@ -70,23 +72,26 @@ class AuthRepository {
 
   Future<UserCredential> signInWithGoogle() async {
     try {
-      // First sign out from Google to ensure clean state
-      // await _googleSignIn.signOut();
+      if (kIsWeb) {
+        final provider = GoogleAuthProvider();
+        provider.setCustomParameters({'promt': 'select_account'});
+        return FirebaseAuth.instance.signInWithPopup(provider);
+      } else {
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser == null) throw Exception('Google sign in aborted');
 
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) throw Exception('Google sign in aborted');
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        // Sign out from Firebase before signing in with new credentials
+        await _auth.signOut();
 
-      // Sign out from Firebase before signing in with new credentials
-      await _auth.signOut();
-
-      return await _auth.signInWithCredential(credential);
+        return await _auth.signInWithCredential(credential);
+      }
     } catch (e) {
       throw _handleAuthException(e);
     }

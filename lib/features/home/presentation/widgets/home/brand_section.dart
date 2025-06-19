@@ -5,6 +5,7 @@ import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_brand_card.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/brand/brand_bloc.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class BrandSection extends StatelessWidget {
   const BrandSection({super.key});
@@ -36,28 +37,46 @@ class BrandSection extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.20,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: state.data.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemBuilder: (context, index) {
-                    final brands = state.data[index];
-                    return InkWell(
-                      onTap: () async {
-                        await Navigator.pushNamed(
-                          context,
-                          AppRouter.brandBasedProducts,
-                          arguments: brands,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  double itemWidth;
+                  double itemHeight;
+                  final screenHeight = MediaQuery.of(context).size.height;
+                  if (kIsWeb) {
+                    itemWidth = constraints.maxWidth * 0.15;
+                    itemHeight = screenHeight * 0.30;
+                  } else {
+                    itemWidth = MediaQuery.of(context).size.width * 0.4;
+                    itemHeight = screenHeight * 0.20;
+                  }
+                  return SizedBox(
+                    height: itemHeight,
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) => SizedBox(width: 10),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.data.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemBuilder: (context, index) {
+                        final brands = state.data[index];
+                        return InkWell(
+                          onTap: () async {
+                            await Navigator.pushNamed(
+                              context,
+                              AppRouter.brandBasedProducts,
+                              arguments: brands,
+                            );
+                            // ignore: use_build_context_synchronously
+                            refresh(context);
+                          },
+                          child: SizedBox(
+                            width: itemWidth,
+                            child: BrandCard(brand: brands),
+                          ),
                         );
-                        // ignore: use_build_context_synchronously
-                        refresh(context);
                       },
-                      child: BrandCard(brand: brands),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ],
           );

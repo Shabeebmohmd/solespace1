@@ -5,6 +5,7 @@ import 'package:sole_space_user1/config/theme/app_color.dart';
 import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/shimmer.dart';
 import 'package:sole_space_user1/features/home/presentation/blocs/category/category_bloc.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class CategoryList extends StatelessWidget {
   const CategoryList({super.key});
@@ -16,42 +17,54 @@ class CategoryList extends StatelessWidget {
         if (state is CategoryLoading) {
           return ShimmerLoaders.categoryLoader();
         } else if (state is CategoryLoaded) {
-          return Container(
-            height: MediaQuery.sizeOf(context).height * 0.08,
-            margin: const EdgeInsets.symmetric(vertical: 16),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: state.data.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder: (context, index) {
-                final category = state.data[index];
-                return InkWell(
-                  onTap: () async {
-                    await Navigator.pushNamed(
-                      context,
-                      AppRouter.categoryBasedProducts,
-                      arguments: category,
-                    );
-                    // ignore: use_build_context_synchronously
-                    refresh(context);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: AppColors.smallTexts,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        category.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final screenHeight = MediaQuery.of(context).size.height;
+              double containerHeight;
+              if (Theme.of(context).platform == TargetPlatform.android ||
+                  Theme.of(context).platform == TargetPlatform.iOS) {
+                containerHeight = screenHeight * 0.08; // 8% for mobile
+              } else {
+                containerHeight = screenHeight * 0.10; // 10% for web/desktop
+              }
+              return Container(
+                height: containerHeight,
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.data.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemBuilder: (context, index) {
+                    final category = state.data[index];
+                    return InkWell(
+                      onTap: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          AppRouter.categoryBasedProducts,
+                          arguments: category,
+                        );
+                        // ignore: use_build_context_synchronously
+                        refresh(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: AppColors.smallTexts,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            category.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         } else if (state is CategoryError) {
           return Center(child: Text(state.message));

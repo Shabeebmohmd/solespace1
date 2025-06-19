@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
+import 'package:sole_space_user1/core/utils/utils.dart';
 import 'package:sole_space_user1/core/widgets/custom_app_bar.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_bloc.dart';
 import 'package:sole_space_user1/features/checkout/presentation/blocs/address/address_state.dart';
@@ -17,8 +19,9 @@ import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CheckoutPage extends StatelessWidget {
+  CheckoutPage({super.key});
+  final ValueNotifier<bool> _cardComplete = ValueNotifier(false);
   final double shipping = 49;
-  const CheckoutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +31,16 @@ class CheckoutPage extends StatelessWidget {
         body: Column(
           children: [
             _buildAddressSection(context),
+            extraMediumSpacing,
+            if (kIsWeb)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CardField(
+                  onCardChanged:
+                      (card) => _cardComplete.value = card?.complete ?? false,
+                ),
+              ),
+            if (kIsWeb) extraMediumSpacing,
             Expanded(
               child: BlocBuilder<CartBloc, CartState>(
                 builder: (context, state) {
@@ -44,10 +57,17 @@ class CheckoutPage extends StatelessWidget {
                     return Column(
                       children: [
                         Expanded(child: OrderItemList(items: state.cartItems)),
-                        CheckoutSummary(
-                          subtotal: total,
-                          shipping: shipping,
-                          onPlaceOrder: () => _handlePlaceOrder(context),
+                        ValueListenableBuilder(
+                          valueListenable: _cardComplete,
+                          builder: (context, cardOk, _) {
+                            final bool enableButton = !kIsWeb || cardOk;
+                            return CheckoutSummary(
+                              subtotal: total,
+                              shipping: shipping,
+                              isButtonEnabled: enableButton,
+                              onPlaceOrder: () => _handlePlaceOrder(context),
+                            );
+                          },
                         ),
                       ],
                     );
