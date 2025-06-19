@@ -17,17 +17,30 @@ class FavoritePage extends StatelessWidget {
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
           if (state is ProductLoaded && state.favorites.isNotEmpty) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: state.favorites.length,
-              itemBuilder: (context, index) {
-                final product = state.favorites[index];
-                return ProductCard(product: product);
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = 2;
+                double width = constraints.maxWidth;
+                if (width >= 1200) {
+                  crossAxisCount = 5;
+                } else if (width >= 900) {
+                  crossAxisCount = 4;
+                } else if (width >= 600) {
+                  crossAxisCount = 3;
+                }
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemCount: state.favorites.length,
+                  itemBuilder: (context, index) {
+                    final product = state.favorites[index];
+                    return ProductCard(product: product);
+                  },
+                );
               },
             );
           } else if (state is ProductLoaded && state.favorites.isEmpty) {

@@ -42,58 +42,75 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildProfileContent(BuildContext context, UserModel user) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildProfileSection(context, user),
-          extraMediumSpacing,
-          _buildSettingsSection(context, 'Account', [
-            _buildSettingsItem(
-              context,
-              'Addresses',
-              Icons.location_on_outlined,
-              () => Navigator.pushNamed(context, AppRouter.addressList),
-            ),
-            Divider(),
-            _buildSettingsItem(
-              context,
-              'Manage Account',
-              Icons.edit_outlined,
-              () => Navigator.pushNamed(
-                context,
-                AppRouter.editUser,
-                arguments: user,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxWidth = constraints.maxWidth > 600 ? 500 : double.infinity;
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildProfileSection(context, user),
+                  extraMediumSpacing,
+                  _buildSettingsSection(context, 'Account', [
+                    _buildSettingsItem(
+                      context,
+                      'Addresses',
+                      Icons.location_on_outlined,
+                      () => Navigator.pushNamed(context, AppRouter.addressList),
+                    ),
+                    Divider(),
+                    _buildSettingsItem(
+                      context,
+                      'Manage Account',
+                      Icons.edit_outlined,
+                      () => Navigator.pushNamed(
+                        context,
+                        AppRouter.editUser,
+                        arguments: user,
+                      ),
+                    ),
+                    Divider(),
+                    _buildSettingsItem(
+                      context,
+                      'Settings',
+                      Icons.settings_outlined,
+                      () =>
+                          Navigator.pushNamed(context, AppRouter.settingsPage),
+                    ),
+                    Divider(),
+                    _buildSettingsItem(
+                      context,
+                      'Orders',
+                      Icons.receipt,
+                      () => Navigator.pushNamed(context, AppRouter.orderPage),
+                    ),
+                    Divider(),
+                    _buildSettingsItem(
+                      context,
+                      'Log out',
+                      Icons.logout_outlined,
+                      () {
+                        showCustomAlertDialog(
+                          context: context,
+                          title: 'Log out',
+                          content: 'Are you sure you want to log out?',
+                          onConfirm:
+                              () => context.read<AuthBloc>().add(SignOut()),
+                        );
+                      },
+                    ),
+                  ]),
+                ],
               ),
             ),
-            Divider(),
-            _buildSettingsItem(
-              context,
-              'Settings',
-              Icons.settings_outlined,
-              () => Navigator.pushNamed(context, AppRouter.settingsPage),
-            ),
-            Divider(),
-            _buildSettingsItem(
-              context,
-              'Orders',
-              Icons.receipt,
-              () => Navigator.pushNamed(context, AppRouter.orderPage),
-            ),
-            Divider(),
-            _buildSettingsItem(context, 'Log out', Icons.logout_outlined, () {
-              showCustomAlertDialog(
-                context: context,
-                title: 'Log out',
-                content: 'Are you sure you want to log out?',
-                onConfirm: () => context.read<AuthBloc>().add(SignOut()),
-              );
-            }),
-          ]),
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 

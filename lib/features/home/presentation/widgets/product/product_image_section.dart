@@ -19,31 +19,45 @@ class ProductImageSection extends StatelessWidget {
 
     return Column(
       children: [
-        CarouselSlider(
-          options: CarouselOptions(
-            height: 300,
-            enableInfiniteScroll: true,
-            enlargeCenterPage: true,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 3),
-            viewportFraction: 0.9,
-            onPageChanged:
-                (index, reason) => currentIndexNotifier.value = index,
-          ),
-          items:
-              imageUrls.map((imageUrl) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    imageUrl,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder:
-                        (context, error, stackTrace) =>
-                            const Icon(Icons.broken_image, size: 100),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // Set max width for web, use full width for mobile
+            double carouselWidth =
+                constraints.maxWidth > 600 ? 600 : constraints.maxWidth;
+            double carouselHeight = constraints.maxWidth > 600 ? 400 : 300;
+
+            return Center(
+              child: SizedBox(
+                width: carouselWidth,
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    height: carouselHeight,
+                    enableInfiniteScroll: true,
+                    enlargeCenterPage: true,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 3),
+                    viewportFraction: 0.9,
+                    onPageChanged:
+                        (index, reason) => currentIndexNotifier.value = index,
                   ),
-                );
-              }).toList(),
+                  items:
+                      imageUrls.map((imageUrl) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image, size: 100),
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         _buildIndicators(context),

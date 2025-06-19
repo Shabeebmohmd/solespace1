@@ -31,31 +31,41 @@ class AddressForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: ListView(
-        children: [
-          _nameField(),
-          mediumSpacing,
-          _cityField(),
-          mediumSpacing,
-          _stateField(),
-          mediumSpacing,
-          _postalField(),
-          mediumSpacing,
-          _phoneField(),
-          mediumSpacing,
-          _addressField(),
-          extraMediumSpacing,
-          ElevatedButton(
-            onPressed: isLoading ? null : onSubmit,
-            child:
-                isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(submitButtonText),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxWidth = constraints.maxWidth > 600 ? 500 : double.infinity;
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Form(
+              key: formKey,
+              child: ListView(
+                children: [
+                  _nameField(),
+                  mediumSpacing,
+                  _cityField(),
+                  mediumSpacing,
+                  _stateField(),
+                  mediumSpacing,
+                  _postalField(),
+                  mediumSpacing,
+                  _phoneField(),
+                  mediumSpacing,
+                  _addressField(),
+                  extraMediumSpacing,
+                  ElevatedButton(
+                    onPressed: isLoading ? null : onSubmit,
+                    child:
+                        isLoading
+                            ? const CircularProgressIndicator()
+                            : Text(submitButtonText),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

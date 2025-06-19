@@ -36,8 +36,27 @@ class CheckoutPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: CardField(
-                  onCardChanged:
-                      (card) => _cardComplete.value = card?.complete ?? false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Colors.blueAccent,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Card details',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    letterSpacing: 1.2,
+                  ),
+                  onCardChanged: (card) {
+                    (card) => _cardComplete.value = card?.complete ?? false;
+                  },
                 ),
               ),
             if (kIsWeb) extraMediumSpacing,
