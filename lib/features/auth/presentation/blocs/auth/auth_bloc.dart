@@ -234,14 +234,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        try {
-          await user.getIdToken(true);
-          emit(Authenticated(uid: user.uid));
-        } catch (e) {
-          await authRepository.signOut();
-          emit(AuthError(message: 'Session expired. Please sign in again.'));
-          emit(Unauthenticated());
-        }
+        emit(Authenticated(uid: user.uid));
       } else {
         emit(Unauthenticated());
       }
@@ -250,4 +243,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(Unauthenticated());
     }
   }
+
+  // Future<void> _onCheckAuthStatus(
+  //   CheckAuthStatus event,
+  //   Emitter<AuthState> emit,
+  // ) async {
+  //   try {
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     if (user != null) {
+  //       try {
+  //         // await user.getIdToken(true);
+  //         emit(Authenticated(uid: user.uid));
+  //       } catch (e) {
+  //         await authRepository.signOut();
+  //         emit(AuthError(message: 'Session expired. Please sign in again.'));
+  //         emit(Unauthenticated());
+  //       }
+  //     } else {
+  //       emit(Unauthenticated());
+  //     }
+  //   } catch (e) {
+  //     emit(AuthError(message: 'Failed to check authentication status.'));
+  //     emit(Unauthenticated());
+  //   }
+  // }
 }

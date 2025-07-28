@@ -1,10 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- For internet usage -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+<!-- For Android 12 and below -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32"/>
+
+<!-- For Android 13 and above -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+
     <application
-        android:label="sole_space_user1"
+        android:label="SoleSpace"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.shabeeb.sole_space_user.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""

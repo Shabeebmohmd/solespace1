@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBP3mRWfNuyGFjvwsnJKe5yIxlXlMVc7zU',
-    appId: '1:783822487684:android:b15d2ecb2efba20ddb82d1',
+    appId: '1:783822487684:android:efbc45b3cf78a1c5db82d1',
     messagingSenderId: '783822487684',
     projectId: 'sole-space-1',
     storageBucket: 'sole-space-1.firebasestorage.app',
@@ -69,8 +69,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '783822487684',
     projectId: 'sole-space-1',
     storageBucket: 'sole-space-1.firebasestorage.app',
-    androidClientId: '783822487684-3enmsuaj9a4qoos9f35hejm60n4ctk60.apps.googleusercontent.com',
-    iosClientId: '783822487684-i8ccebmkasbe9a8ae4jlddl3qck1fikl.apps.googleusercontent.com',
+    androidClientId:
+        '783822487684-335k2la7fi3te0art7rjs57sl9l004ua.apps.googleusercontent.com',
+    iosClientId:
+        '783822487684-i8ccebmkasbe9a8ae4jlddl3qck1fikl.apps.googleusercontent.com',
     iosBundleId: 'com.example.soleSpaceUser1',
   );
 }

@@ -77,11 +77,28 @@ class AuthRepository {
         provider.setCustomParameters({'promt': 'select_account'});
         return FirebaseAuth.instance.signInWithPopup(provider);
       } else {
+        // Add debug logging
+        print('Starting Google Sign-In process...');
+
         final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-        if (googleUser == null) throw Exception('Google sign in aborted');
+        if (googleUser == null) {
+          print('Google sign in was aborted by user');
+          throw Exception('Google sign in aborted');
+        }
+
+        print('Google user obtained: ${googleUser.email}');
 
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
+
+        print('Google authentication completed');
+        print(
+          'Access token: ${googleAuth.accessToken != null ? 'Present' : 'Missing'}',
+        );
+        print(
+          'ID token: ${googleAuth.idToken != null ? 'Present' : 'Missing'}',
+        );
+
         final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
@@ -89,10 +106,19 @@ class AuthRepository {
 
         // Sign out from Firebase before signing in with new credentials
         await _auth.signOut();
+        print(
+          'Firebase signed out, attempting to sign in with Google credential...',
+        );
 
-        return await _auth.signInWithCredential(credential);
+        final userCredential = await _auth.signInWithCredential(credential);
+        print(
+          'Successfully signed in with Google: ${userCredential.user?.email}',
+        );
+
+        return userCredential;
       }
     } catch (e) {
+      print('Google Sign-In error: $e');
       throw _handleAuthException(e);
     }
   }

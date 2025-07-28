@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sole_space_user1/config/firebase_options.dart';
+import 'package:sole_space_user1/firebase_options.dart';
 import 'package:sole_space_user1/config/routes/app_router.dart';
 import 'package:sole_space_user1/config/theme/app_theme.dart';
 import 'package:sole_space_user1/features/auth/presentation/blocs/auth/auth_bloc.dart';
@@ -29,16 +29,16 @@ import 'package:sole_space_user1/features/orders/data/order_repository.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_bloc.dart';
 import 'package:sole_space_user1/features/orders/presentation/blocs/order/order_event.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Stripe
-  final paymentService = PaymentService();
-  await paymentService.initializeStripe(StripeConstants.publishableKey);
+    // Initialize Stripe
+    final paymentService = PaymentService();
+    await paymentService.initializeStripe(StripeConstants.publishableKey);
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
-}
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    runApp(const MyApp());
+  }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
